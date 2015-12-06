@@ -15,9 +15,17 @@ win32:{
     MPIPATH = "C:/Program Files (x86)/Microsoft SDKs/MPI"
     MPILIB = $$MPIPATH/Lib/x64
     MPIINC = $$MPIPATH/Include
+    LIBS += -L$$MPILIB -lmsmpi
 }
 
-LIBS += -L$$MPILIB -lmsmpi
+unix|!macox:{
+    MPIPATH = /opt/mpich
+    MPILIB = $$MPIPATH/lib
+    MPIINC = $$MPIPATH/include
+    LIBS += -L$$MPILIB -lmpi
+}
+
+
 
 INCLUDEPATH += $$MPIINC
 DEPENDPATH  += $$MPIINC

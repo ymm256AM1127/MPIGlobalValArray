@@ -6,7 +6,7 @@
 #include "MPIWapperUtils.h"
 #include <mpi.h>
 
-static std::unordered_map< void*, MPI_Win > MPIWinAllocMap;
+//static std::unordered_map< void*, MPI_Win > MPIWinAllocMap;
 
 template <class T>
 struct MPISharedAllocator
