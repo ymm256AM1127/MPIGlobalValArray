@@ -7,7 +7,8 @@ CONFIG -= app_bundle
 
 TEMPLATE = app
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    MPIWapperUtils.cpp
 
 
 win32:{
@@ -20,4 +21,9 @@ LIBS += -L$$MPILIB -lmsmpi
 
 INCLUDEPATH += $$MPIINC
 DEPENDPATH  += $$MPIINC
+
+HEADERS += \
+    MPISharedAllocator.h \
+    MPIWapperUtils.h \
+    MPISharedVector.h
 
