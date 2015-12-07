@@ -9,24 +9,26 @@ class MPISharedVector : private std::vector<T, MPISharedAllocator<T> >
 {
 public:
     using STLVector = std::vector<T, MPISharedAllocator<T> >;
-    explicit MPISharedVector( const typename STLVector::allocator_type& alloc = typename STLVector::allocator_type()) : STLVector( alloc ){}
-    explicit MPISharedVector( typename STLVector::size_type n) :  STLVector( n ){}
+    using size_type = typename STLVector::size_type;
+    using value_type = typename STLVector::value_type;
+    using allocator_type = allocator_type;
+    explicit MPISharedVector( const allocator_type& alloc = allocator_type()) : STLVector( alloc ){}
+    explicit MPISharedVector( size_type n) :  STLVector( n ){}
 
-    MPISharedVector( typename STLVector::size_type n,
-                     const typename STLVector::value_type& val,
-                     const typename STLVector::allocator_type& alloc = typename STLVector::allocator_type())
+    MPISharedVector( size_type n, const value_type& val,
+                     const allocator_type& alloc = allocator_type() )
             : STLVector( n, val, alloc ){}
 
     template <class InputIterator>
     MPISharedVector( InputIterator first, InputIterator last,
-                       const typename STLVector::allocator_type& alloc = typename STLVector::allocator_type() )
+                       const allocator_type& alloc = allocator_type() )
             : STLVector( first, last, alloc ){}
 
     MPISharedVector( const MPISharedVector& x ) : STLVector( x ){}
-    MPISharedVector( const MPISharedVector& x, const typename STLVector::allocator_type& alloc ) : STLVector( x, alloc ){}
+    MPISharedVector( const MPISharedVector& x, const allocator_type& alloc ) : STLVector( x, alloc ){}
     MPISharedVector( MPISharedVector&& x ) : STLVector( x ){}
-    MPISharedVector( MPISharedVector&& x, const typename STLVector::allocator_type& alloc ) : STLVector( x ){}
-    MPISharedVector( std::initializer_list<typename STLVector::value_type> il, const typename STLVector::allocator_type& alloc = typename STLVector::allocator_type() ) : STLVector( il, alloc ){}
+    MPISharedVector( MPISharedVector&& x, const allocator_type& alloc ) : STLVector( x ){}
+    MPISharedVector( std::initializer_list<typename STLVector::value_type> il, const allocator_type& alloc = allocator_type() ) : STLVector( il, alloc ){}
 
     using STLVector::operator=    ;
     using STLVector::begin        ;

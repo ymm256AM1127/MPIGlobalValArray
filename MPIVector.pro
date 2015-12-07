@@ -11,14 +11,21 @@ SOURCES += main.cpp \
     MPIWapperUtils.cpp
 
 
-win32:{
+win32{
     MPIPATH = "C:/Program Files (x86)/Microsoft SDKs/MPI"
     MPILIB = $$MPIPATH/Lib/x64
     MPIINC = $$MPIPATH/Include
     LIBS += -L$$MPILIB -lmsmpi
 }
 
-unix|!macox:{
+macx:!unix{
+    MPIPATH = /opt/mpich
+    MPILIB = $$MPIPATH/lib
+    MPIINC = $$MPIPATH/include
+    LIBS += -L$$MPILIB -lmpi
+}
+
+unix{
     MPIPATH = /opt/mpich
     MPILIB = $$MPIPATH/lib
     MPIINC = $$MPIPATH/include
@@ -35,3 +42,5 @@ HEADERS += \
     MPIWapperUtils.h \
     MPISharedVector.h
 
+
+message( $$INCLUDEPATH )
