@@ -1,4 +1,5 @@
 #include "MPIWapperUtils.h"
+#include <iostream>
 
 std::unordered_map< void*, MPI_Win > MPIWinAllocMap;
 

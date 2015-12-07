@@ -11,20 +11,26 @@ SOURCES += main.cpp \
     MPIWapperUtils.cpp
 
 
-win32:{
+win32{
     MPIPATH = "C:/Program Files (x86)/Microsoft SDKs/MPI"
     MPILIB = $$MPIPATH/Lib/x64
     MPIINC = $$MPIPATH/Include
     LIBS += -L$$MPILIB -lmsmpi
 }
 
-unix|!macox:{
+unix:!macx{
     MPIPATH = /opt/mpich
     MPILIB = $$MPIPATH/lib
     MPIINC = $$MPIPATH/include
     LIBS += -L$$MPILIB -lmpi
 }
 
+macx{
+    MPIPATH = /opt/mpich
+    MPILIB = $$MPIPATH/lib
+    MPIINC = $$MPIPATH/include
+    LIBS += -L$$MPILIB -lmpi
+}
 
 
 INCLUDEPATH += $$MPIINC

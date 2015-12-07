@@ -5,6 +5,7 @@
 #include <exception>
 #include "MPIWapperUtils.h"
 #include <mpi.h>
+#include <iostream>
 
 //static std::unordered_map< void*, MPI_Win > MPIWinAllocMap;
 
@@ -88,13 +89,13 @@ struct MPISharedAllocator
         static_cast<void>(n); //　コンパイラ警告対策
 
         auto iter = MPIWinAllocMap.find( (void*)p );
+
         if(  iter != MPIWinAllocMap.end() )
         {
             MPI_Win win_temp = iter->second;
             MPI_Win_free( &win_temp );
             MPIWinAllocMap.erase( iter );
         }
-        MPI_Barrier( MPI_COMM_WORLD );
     }
 };
 
