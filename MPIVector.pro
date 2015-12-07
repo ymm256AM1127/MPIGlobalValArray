@@ -18,7 +18,18 @@ win32{
     LIBS += -L$$MPILIB -lmsmpi
 }
 
+<<<<<<< HEAD
 unix:!macx{
+=======
+macx:!unix{
+    MPIPATH = /opt/mpich
+    MPILIB = $$MPIPATH/lib
+    MPIINC = $$MPIPATH/include
+    LIBS += -L$$MPILIB -lmpi
+}
+
+unix{
+>>>>>>> 1c177d50ff5bf52b663ecf62ce6c311b5d4c4d30
     MPIPATH = /opt/mpich
     MPILIB = $$MPIPATH/lib
     MPIINC = $$MPIPATH/include
@@ -41,3 +52,5 @@ HEADERS += \
     MPIWapperUtils.h \
     MPISharedVector.h
 
+
+message( $$INCLUDEPATH )
