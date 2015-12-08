@@ -11,8 +11,8 @@ public:
     using STLVector = std::vector<T, MPISharedAllocator<T> >;
     using size_type = typename STLVector::size_type;
     using value_type = typename STLVector::value_type;
-    using allocator_type = allocator_type;
-    explicit MPISharedVector( const allocator_type& alloc = allocator_type()) : STLVector( alloc ){}
+    using allocator_type = typename STLVector::allocator_type;
+    explicit MPISharedVector( const allocator_type& alloc = allocator_type() ) : STLVector( alloc ){}
     explicit MPISharedVector( size_type n) :  STLVector( n ){}
 
     MPISharedVector( size_type n, const value_type& val,
@@ -52,7 +52,7 @@ public:
     using STLVector::back         ;
     using STLVector::data         ;
     using STLVector::assign       ;
-    using STLVector::push_back    ;
+//    using STLVector::push_back    ;
     using STLVector::pop_back     ;
     using STLVector::insert       ;
     using STLVector::erase        ;
@@ -60,6 +60,13 @@ public:
     using STLVector::clear        ;
     using STLVector::emplace      ;
     using STLVector::emplace_back ;
+
+    //! Custom implementation
+    void    push_back( const T& val )
+    {
+        STLVector::push_back( val );
+    }
+
 };
 
 #endif // MPISHAREDVECTOR_H

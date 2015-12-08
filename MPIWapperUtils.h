@@ -6,6 +6,9 @@
 
 //! MPI Window‚Ìƒƒ‚ƒŠŠÇ——pHashmap
 extern std::unordered_map< void*, MPI_Win > MPIWinAllocMap;
+extern bool MPIRunningFlag;
+
+void        MPIInit( int &argc, char** &argv );
 
 /*!
  * \brief MPIFinalize \n

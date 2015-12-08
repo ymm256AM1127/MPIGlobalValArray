@@ -77,6 +77,9 @@ struct MPISharedAllocator
             MPIWinAllocMap[ (void*)base_ptr ] = win;
         }
 
+        //! 全てのランクと同期をとる。
+        MPI_Barrier( MPI_COMM_WORLD );
+
         return base_ptr;
     }
 
@@ -87,14 +90,19 @@ struct MPISharedAllocator
     {
         static_cast<void>(n); //　コンパイラ警告対策
 
-        auto iter = MPIWinAllocMap.find( (void*)p );
-        if(  iter != MPIWinAllocMap.end() )
+        //! 全てのランクと同期をとる。
+        if( ::MPIRunningFlag )
         {
-            MPI_Win win_temp = iter->second;
-            MPI_Win_free( &win_temp );
-            MPIWinAllocMap.erase( iter );
+            MPI_Barrier( MPI_COMM_WORLD );
+
+            auto iter = MPIWinAllocMap.find( (void*)p );
+            if(  iter != MPIWinAllocMap.end() )
+            {
+                MPI_Win win_temp = iter->second;
+                MPI_Win_free( &win_temp );
+                MPIWinAllocMap.erase( iter );
+            }
         }
-        MPI_Barrier( MPI_COMM_WORLD );
     }
 };
 
