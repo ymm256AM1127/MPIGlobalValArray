@@ -5,21 +5,22 @@
 #include "MPIWapperUtils.h"
 #include "MPISharedVector.h"
 #include <QElapsedTimer>
+#include <memory.h>
 
 const int ExecCount = 100;
 
 int main(int argc, char *argv[])
 {
-    //! MPI‚Ì‰Šú‰»
+    //! MPIã®åˆæœŸåŒ–
     MPI_Init( &argc, &argv );
 
-    std::vector<double> bufferIn( 1 << 20 );
-    std::vector<double> bufferOut( 1 << 20 );
+    std::vector<double> bufferIn( 1 << 22 );
+    std::vector<double> bufferOut( 1 << 22   );
 
-    std::cout << "rank " << MPIRank() << " " << bufferIn.size() << std::endl;
-
-    int src = MPIRank() - 1;
-    int dst = MPIRank() + 1;
+    int myrank  = MPIRank();
+    int mpisize = MPISize();
+    int src     = MPIRank() - 1;
+    int dst     = MPIRank() + 1;
 
     if( src < 0 )
     {
@@ -33,6 +34,7 @@ int main(int argc, char *argv[])
 
     MPI_Request request[2];
     qint64 elapsed = 0;
+    MPI_Barrier( MPI_COMM_WORLD );
 
     for( auto ii = 0; ii < ExecCount; ii++ )
     {
@@ -42,7 +44,7 @@ int main(int argc, char *argv[])
         MPI_Isend( bufferOut.data(), bufferIn.size(),  MPI_DOUBLE, dst, 0, MPI_COMM_WORLD, &request[0] );
         MPI_Irecv( bufferIn.data() , bufferOut.size(), MPI_DOUBLE, src, 0, MPI_COMM_WORLD, &request[1] );
 
-        MPI_Waitall( sizeof( request ), request, MPI_STATUSES_IGNORE );
+        MPI_Waitall( sizeof( request ) / sizeof( MPI_Request), request, MPI_STATUSES_IGNORE );
 
         elapsed += timer.elapsed();
 
@@ -51,14 +53,35 @@ int main(int argc, char *argv[])
 
     MPI_Barrier( MPI_COMM_WORLD );
 
-    std::cout << "Rank " << MPIRank() << ": " << elapsed << std::endl;
+    qint64 totalelapsed1 = 0;
+    MPI_Allreduce( &elapsed, &totalelapsed1, 1, MPI_LONG, MPI_SUM, MPI_COMM_WORLD );
 
 
-//    MPISharedVector<double> vecIn( (1 << 20) * MPISize() );
-//    MPISharedVector<double> vecOut( (1 << 20) * MPISize() );
 
-    //! ƒ‰ƒbƒv‚µ‚½MPI_Finalize()‚ÌŒÄ‚Ño‚µB
+    elapsed = 0;
+    MPISharedVector<double> vecIn( (1 << 22) * MPISize() );
+    MPISharedVector<double> vecOut( (1 << 22) * MPISize() );
+
+    for( auto ii = 0; ii < ExecCount; ii++ )
+    {
+        QElapsedTimer timer;
+        timer.start();
+
+        //! ã“ã“ã«SHMã®ã‚³ãƒ¼ãƒ‰ã‚’æ›¸ãã€‚
+
+        elapsed += timer.elapsed();
+
+        MPI_Barrier( MPI_COMM_WORLD );
+    }
+
+
+    //! ãƒ©ãƒƒãƒ—ã—ãŸMPI_Finalize()ã®å‘¼ã³å‡ºã—ã€‚
     MPIFinalize();
+
+    if( myrank == 0 )
+    {
+        std::cout << "Time " << totalelapsed / mpisize << std::endl;
+    }
 
     return 0;
 }
