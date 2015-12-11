@@ -8,7 +8,8 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    MPIWapperUtils.cpp
+    MPIWapperUtils.cpp \
+    src/MPI/Environment.cpp
 
 
 win32{
@@ -40,7 +41,11 @@ DEPENDPATH  += $$MPIINC
 HEADERS += \
     MPISharedAllocator.h \
     MPIWapperUtils.h \
-    MPISharedVector.h
+    MPISharedVector.h \
+    include/SharedLibraryDefine.h \
+    include/MPI/Environment.h \
+    include/Utility/SingletonHolder.h \
+    include/MPI/ErrorCode.h
 
 
 message( $$INCLUDEPATH )
