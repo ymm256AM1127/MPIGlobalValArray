@@ -1,9 +1,12 @@
 #include "../../include/MPI/Environment.h"
 
 #include <mpi.h>
+#include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include "../../include/MPI/ErrorCode.h"
+
+//#define _MPI_MULTI_THREAD_ENABLE_
 
 
 _MYNAMESPACE_::MPI::Environment::Environment()
@@ -26,10 +29,11 @@ void _MYNAMESPACE_::MPI::Environment::Init(int argc, char *argv[])
     MPI_Init_thread( &argc, &argv, MPI_THREAD_MULTIPLE, &provided );
     if( provided != MPI_SUCCESS )
     {
-        MPI_Finalize();
         std::stringstream ss;
         ss << "Error Code: " << NOTSUPPORTTHREADMULTIPLE << " => it does not definde MPI Thread Multiple." << std::endl;
-        throw std::logic_error( ss.str() );
+        throw std::domain_error( ss.str() );
+        Finalize();
+        Abort( NOTSUPPORTTHREADMULTIPLE );
     }
 #endif
     MPI_Comm_rank( MPI_COMM_WORLD, &m_i32MPIRank );
