@@ -7,6 +7,7 @@
 #include <memory.h>
 
 #include "include/MPI/Environment.h"
+#include "include/MPI/Communicator.h"
 
 const int ExecCount = 100;
 
@@ -33,55 +34,34 @@ int main(int argc, char *argv[])
         dst = 0;
     }
 
-    MPI_Request request[2];
     qint64 elapsed = 0;
-    MPI_Barrier( MPI_COMM_WORLD );
+    MPICommPtr->Barrier();
 
     for( auto ii = 0; ii < ExecCount; ii++ )
     {
         QElapsedTimer timer;
         timer.start();
 
-        MPI_Isend( bufferOut.data(), bufferIn.size(),  MPI_DOUBLE, dst, 0, MPI_COMM_WORLD, &request[0] );
-        MPI_Irecv( bufferIn.data() , bufferOut.size(), MPI_DOUBLE, src, 0, MPI_COMM_WORLD, &request[1] );
-
-        MPI_Waitall( sizeof( request ) / sizeof( MPI_Request), request, MPI_STATUSES_IGNORE );
+        MPICommPtr->Isend<double>( bufferOut[0], dst, bufferIn.size() );
+        MPICommPtr->Irecv<double>( bufferIn[0], src, bufferOut.size() );
+        MPICommPtr->WaitAll();
 
         elapsed += timer.elapsed();
 
-        MPI_Barrier( MPI_COMM_WORLD );
+        MPICommPtr->Barrier();
     }
 
-    MPI_Barrier( MPI_COMM_WORLD );
+    MPICommPtr->Barrier();
 
     qint64 totalelapsed1 = 0;
-    MPI_Allreduce( &elapsed, &totalelapsed1, 1, MPI_LONG, MPI_SUM, MPI_COMM_WORLD );
-
-
-
-//    elapsed = 0;
-//    MPISharedVector<double> vecIn( (1 << 22) * MPISize() );
-//    MPISharedVector<double> vecOut( (1 << 22) * MPISize() );
-
-//    for( auto ii = 0; ii < ExecCount; ii++ )
-//    {
-//        QElapsedTimer timer;
-//        timer.start();
-
-//        //! ここにSHMのコードを書く。
-
-//        elapsed += timer.elapsed();
-
-//        MPI_Barrier( MPI_COMM_WORLD );
-//    }
-
+    MPICommPtr->Allreduce<_MYNAMESPACE_::MPI::SUM, qint64>( elapsed, totalelapsed1, 1);
 
     //! ラップしたMPI_Finalize()の呼び出し。
     MPIEnvPtr->Finalize();
 
     if( myrank == 0 )
     {
-        std::cout << "Time " << totalelapsed1 / mpisize << std::endl;
+        std::cout << MPIEnvPtr->GetHostName() << " Time " << totalelapsed1 / mpisize << std::endl;
     }
 
     return 0;

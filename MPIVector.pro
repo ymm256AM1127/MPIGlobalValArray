@@ -9,7 +9,10 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     MPIWapperUtils.cpp \
-    src/MPI/Environment.cpp
+    src/MPI/Environment.cpp \
+    src/MPI/Communicator.cpp \
+    src/MPI/CustomDataType.cpp \
+    src/MPI/CustomOperationType.cpp
 
 
 win32{
@@ -45,7 +48,21 @@ HEADERS += \
     include/SharedLibraryDefine.h \
     include/MPI/Environment.h \
     include/Utility/SingletonHolder.h \
-    include/MPI/ErrorCode.h
+    include/MPI/ErrorCode.h \
+    include/MPI/Communicator.h \
+    include/MPL/is_complex.h \
+    include/MPL/is_container.h \
+    include/MPL/is_pod.h \
+    include/MPL/is_string.h \
+    include/MPL/remove_modifier.h \
+    include/MPL/meta_function.h \
+    include/MPI/detail/CommunicatorPodTraitImpl.h \
+    include/MPI/detail/CommunicatorImpl.h \
+    include/MPI/CommunicatorTraits.h \
+    include/MPI/DataTypeDefine.h \
+    include/MPI/CustomDataType.h \
+    include/MPI/CustomOperationType.h \
+    include/MPI/PreDefinedDataType.h \
+    include/MPI/PreDefinedOperationType.h \
+    include/Utility/ScopedMutex.h
 
-
-message( $$INCLUDEPATH )

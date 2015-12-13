@@ -10,6 +10,7 @@ namespace _MYNAMESPACE_
         typedef enum _ERRORCODE_
         {
             NOTSUPPORTTHREADMULTIPLE = -1,
+            CANNOTINSERTVALTOMAP     = -2
         } ERROR_CODE;
     }
 }
