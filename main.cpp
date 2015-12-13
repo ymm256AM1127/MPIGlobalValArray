@@ -89,8 +89,94 @@ int main(int argc, char *argv[])
         }
         MPICommPtr->Barrier();
     }
-    qint64 elapsed = 0;
     MPICommPtr->Barrier();
+
+    //! 集団通信の確認(string)--Gather ===================================================================================
+    std::stringstream ssgather;
+    ssgather << "Rank";
+    for( auto ii = 0; ii < MPIEnvPtr->GetMPIRank() + 1; ii++ )
+    {
+        ssgather << ii;
+    }
+//    ssgather << std::endl;
+
+    MPICommPtr->Barrier();
+
+    std::string gathersend = ssgather.str();
+    std::string gatherrecv;
+
+    MPICommPtr->Gather( gathersend, gatherrecv, MPIEnvPtr->GetRootRank() );
+
+    for( auto ii = 0; ii < MPIEnvPtr->GetMPISize(); ii++ )
+    {
+        if( MPIEnvPtr->GetMPIRank() == ii )
+        {
+            std::cout << "[GATHER TEST] Rank: " << MPIEnvPtr->GetMPIRank() << " => " << gatherrecv << std::endl;
+        }
+        MPICommPtr->Barrier();
+    }
+    MPICommPtr->Barrier();
+
+    //! 集団通信の確認(string)--Scatter ==================================================================================
+
+    std::string strscatter;
+
+    MPICommPtr->Scatter<std::string>( gatherrecv, strscatter, MPIEnvPtr->GetRootRank() );
+
+    for( auto ii = 0; ii < MPIEnvPtr->GetMPISize(); ii++ )
+    {
+        if( MPIEnvPtr->GetMPIRank() == ii )
+        {
+            std::cout << "[SCATTER TEST] Rank: " << MPIEnvPtr->GetMPIRank() << " => " << strscatter << std::endl;
+        }
+        MPICommPtr->Barrier();
+    }
+    MPICommPtr->Barrier();
+
+    //! 集団通信の確認(string)--AllGather ================================================================================
+    std::stringstream ssallgather;
+    ssallgather << "Rank" << MPIEnvPtr->GetMPIRank();
+    for( auto ii = 0; ii < MPIEnvPtr->GetMPIRank() + 1; ii++ )
+    {
+        ssallgather << ii;
+    }
+//    ssallgather << std::endl;
+
+    std::string allgathersend = ssallgather.str();
+    std::string allgatherrecv;
+
+    MPICommPtr->Barrier();
+
+    MPICommPtr->AllGather<std::string>( allgathersend, allgatherrecv );
+
+    for( auto ii = 0; ii < MPIEnvPtr->GetMPISize(); ii++ )
+    {
+        if( MPIEnvPtr->GetMPIRank() == ii )
+        {
+            std::cout << "[AllGATHER TEST] Rank: " << MPIEnvPtr->GetMPIRank() << " => \n" << allgatherrecv  << " size: " << allgatherrecv.size() << std::endl;
+        }
+        MPICommPtr->Barrier();
+    }
+    MPICommPtr->Barrier();
+
+    //! 集団通信の確認(string)--Alltoall =================================================================================
+
+    std::string stralltoall;
+
+    MPICommPtr->Alltoall<std::string>( allgatherrecv, stralltoall );
+
+    for( auto ii = 0; ii < MPIEnvPtr->GetMPISize(); ii++ )
+    {
+        if( MPIEnvPtr->GetMPIRank() == ii )
+        {
+            std::cout << "[ALLTOALL TEST] Rank: " << MPIEnvPtr->GetMPIRank() << " => " << stralltoall << std::endl;
+        }
+        MPICommPtr->Barrier();
+    }
+    MPICommPtr->Barrier();
+
+
+    qint64 elapsed = 0;
 
     for( auto ii = 0; ii < ExecCount; ii++ )
     {

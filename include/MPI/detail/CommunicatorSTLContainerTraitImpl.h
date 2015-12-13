@@ -148,75 +148,177 @@ namespace _MYNAMESPACE_
 
         // Gather
         template<typename T>
-        int     Communicator::_Gather_( std_container_traits_tag, const T &SendBuffer, typename list_trais<T>::type &RecvBuffer, const int rootRank, const int itemCount )
+        /*!
+         * \brief Communicator::_Gather_
+         * アイテムカウントは無効となる。
+         * \param SendBuffer
+         * \param RecvBuffer
+         * \param rootRank
+         * \param itemCount
+         * \return
+         */
+        int     Communicator::_Gather_( std_container_traits_tag, const T &SendBuffer,
+                                        T &RecvBuffer,
+                                        const int rootRank,
+                                        const int itemCount )
         {
             using value_type = typename std::enable_if< is_pod_with_complex< typename T::value_type >::value, typename T::value_type >::type;
 
             int retival = 0;
 
-            int sendsize = 0;
+            int SendSize    = static_cast<int>( SendBuffer.size() );
 
-            //! size check
-            if( itemCount == 0 )
-            {
-                sendsize = SendBuffer.size();
-            }
-            else if( static_cast<int>( SendBuffer.size() ) > itemCount )  //例外を投げておく。MPIは例外が出た時点で止まる。
-            {
-                int myrank = 0;
-                MPI_Comm_rank( m_Commnunicator, &myrank );
-                std::stringstream ss;
-                ss << "Error Code: " << GATHERSIZEERROR << " on file: " << __FILE__ << ", Line: " << __LINE__ << ", Rank: " << myrank << std::endl;
-                throw std::range_error( ss.str() );
-            }
+            //! 送信バッファは指定されたコンテナのサイズの最小とし、そのサイズの総ランク分の
+            //! バッファを受信バッファとする。その理由として、最大値を必要とすると少ない方の
+            //! コンテナのサイズを拡張する必要があり、パフォーマンスの面で良くないため。
+            int MinSendSize = 0;
+            this->Allreduce<MIN,int>( SendSize, MinSendSize, 1 );
 
+            int MPISize = 0;
+            MPI_Comm_size( m_Commnunicator, &MPISize );
+
+            //! 受信バッファサイズの計算
+            int RecvSize = MinSendSize * MPISize;
+
+            T recvbuffer( RecvSize, 0 );
+
+
+            retival =  MPI_Gather( (void*)SendBuffer.data(), MinSendSize, MPIDataType<value_type>(),
+                                   (void*)recvbuffer.data(), MinSendSize, MPIDataType<value_type>(),
+                                   rootRank, m_Commnunicator );
+
+            RecvBuffer.swap( recvbuffer );
 
             return retival;
         }
 
         // Scatter
         template<typename T>
-        int     Communicator::_Scatter_( std_container_traits_tag, const typename list_trais<T>::type &SendBuffer, T &RecvBuffer, const int rootRank, const int itemCount )
+        /*!
+         * \brief Communicator::_Scatter_
+         * \param SendBuffer
+         * \param RecvBuffer
+         * \param rootRank
+         * \param itemCount
+         * \return
+         */
+        int     Communicator::_Scatter_( std_container_traits_tag, const T &SendBuffer, T &RecvBuffer, const int rootRank, const int itemCount )
         {
-            return 0;
+            using value_type = typename std::enable_if< is_pod_with_complex< typename T::value_type >::value, typename T::value_type >::type;
+            int retival  = 0;
+            int myrank   = 0;
+            int mpisize  = 1;
+            int sendsize = 0;
+            MPI_Comm_rank( m_Commnunicator, &myrank  );
+            MPI_Comm_size( m_Commnunicator, &mpisize );
+
+            if( myrank == rootRank )
+            {
+                sendsize = SendBuffer.size();
+
+                if( sendsize > 0 && ( ( sendsize % mpisize ) == 0 ) )
+                {
+                    sendsize = sendsize / mpisize;
+                }
+                else
+                {
+                    std::stringstream ss;
+                    ss << "Error Code: " << SCCATERSIZEERROR << " on file: " << __FILE__ << ", Line: " << __LINE__ << ", Rank: " << myrank << std::endl;
+                    throw std::range_error( ss.str() );
+                }
+            }
+
+            this->Bcast<int>( sendsize, rootRank, 1 );
+
+            T temp( sendsize, 0 );
+
+            retival = MPI_Scatter( (void*)SendBuffer.data(), sendsize, MPIDATATYPE<value_type>(), (void*)temp.data(), sendsize, MPIDATATYPE<value_type>(), rootRank, m_Commnunicator  );
+
+            RecvBuffer.swap( temp );
+
+            return retival;
         }
 
         // AllGather
         template<typename T>
         int     Communicator::_AllGather_( std_container_traits_tag,
-                                           const T &SendBuffer, typename list_trais<T>::type &RecvBuffer,
+                                           const T &SendBuffer,
+                                           T &RecvBuffer,
                                            const int itemCount )
         {
-            return 0;
+            using value_type = typename std::enable_if< is_pod_with_complex< typename T::value_type >::value, typename T::value_type >::type;
+
+            int retival = 0;
+
+            int SendSize    = static_cast<int>( SendBuffer.size() );
+
+            //! 送信バッファは指定されたコンテナのサイズの最小とし、そのサイズの総ランク分の
+            //! バッファを受信バッファとする。その理由として、最大値を必要とすると少ない方の
+            //! コンテナのサイズを拡張する必要があり、パフォーマンスの面で良くないため。
+            int MinSendSize = 0;
+            this->Allreduce< MIN, int>( SendSize, MinSendSize, 1 );
+
+            int MPISize = 0;
+            MPI_Comm_size( m_Commnunicator, &MPISize );
+
+            //! 受信バッファサイズの計算
+            int RecvSize = MinSendSize * MPISize;
+
+            T recvbuffer( RecvSize , 0 );
+
+            retival =  MPI_Allgather( (void*)SendBuffer.data(), MinSendSize, MPIDataType<value_type>(),
+                                      (void*)recvbuffer.data(), MinSendSize, MPIDataType<value_type>(),
+                                      m_Commnunicator );
+
+            RecvBuffer.swap( recvbuffer );
+
+            return retival;
         }
 
         // Alltoall
         template<typename T>
         int     Communicator::_Alltoall_( std_container_traits_tag,
-                                          const typename list_trais<T>::type &SendBuffer,
-                                                typename list_trais<T>::type &RecvBuffer,
+                                          const T &SendBuffer,
+                                                T &RecvBuffer,
                                           const int itemCount )
         {
-            return 0;
-        }
+            using value_type = typename std::enable_if< is_pod_with_complex< typename T::value_type >::value, typename T::value_type >::type;
+            int retival  = 0;
 
-        // Reduce
-        template<typename T >
-        int     Communicator::_Reduce_( std_container_traits_tag, MPI_Op Op,
-                                        const typename reducible_type<T>::type &SendBuffer,
-                                        typename reducible_type<T>::type &RecvBuffer,
-                                        const int rootRank, const int itemCount )
-        {
-            return 0;
-        }
+            int SendSize    = static_cast<int>( SendBuffer.size() );
 
-        // AllReduce
-        template<typename T >
-        int     Communicator::_Allreduce_( std_container_traits_tag, MPI_Op Op,
-                                           const typename reducible_type<T>::type &SendBuffer,
-                                           typename reducible_type<T>::type &RecvBuffer, const int itemCount )
-        {
-            return 0;
+            //! 送信バッファは指定されたコンテナのサイズの最小とし、そのサイズの総ランク分の
+            //! バッファを受信バッファとする。その理由として、最大値を必要とすると少ない方の
+            //! コンテナのサイズを拡張する必要があり、パフォーマンスの面で良くないため。
+            int MinSendSize = 0;
+            this->Allreduce< MIN, int>( SendSize, MinSendSize, 1 );
+
+            int MPISize = 0;
+            MPI_Comm_size( m_Commnunicator, &MPISize );
+
+            if( SendSize > 0 && ( ( SendSize % MPISize ) == 0 ) )
+            {
+                SendSize = SendSize / MPISize;
+            }
+            else
+            {
+                int myrank   = 0;
+                MPI_Comm_rank( m_Commnunicator, &myrank  );
+                std::stringstream ss;
+                ss << "Error Code: " << ALLTOALLSIZEERROR << " on file: " << __FILE__ << ", Line: " << __LINE__ << ", Rank: " << myrank << std::endl;
+                throw std::range_error( ss.str() );
+            }
+
+            //! 受信バッファサイズの計算
+            int RecvSize = MinSendSize * MPISize;
+
+            T recvbuffer( RecvSize , 0 );
+
+            retival = MPI_Alltoall( (void*)SendBuffer.data(), SendSize, MPIDATATYPE<value_type>(), (void*)recvbuffer.data(), SendSize, MPIDATATYPE<value_type>() , m_Commnunicator  );
+
+            RecvBuffer.swap( recvbuffer );
+
+            return retival;
         }
 
     }

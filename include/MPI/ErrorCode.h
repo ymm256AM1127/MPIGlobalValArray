@@ -13,7 +13,9 @@ namespace _MYNAMESPACE_
             CANNOTINSERTVALTOMAP     = -2,
             P2PCOMMSIZEERROR         = -3,
             BROADCASTSIZEERROR       = -4,
-            GATHERSIZEERROR          = -5
+            GATHERSIZEERROR          = -5,
+            SCCATERSIZEERROR         = -6,
+            ALLTOALLSIZEERROR        = -7
         } ERROR_CODE;
     }
 }

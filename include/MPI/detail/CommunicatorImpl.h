@@ -82,7 +82,7 @@ namespace _MYNAMESPACE_
          * \param itemCount
          * \return
          */
-        int Communicator::Gather( const T &SendBuffer, typename list_trais<T>::type &RecvBuffer, const int rootRank, const int itemCount )
+        int Communicator::Gather( const T &SendBuffer, T &RecvBuffer, const int rootRank, const int itemCount )
         {
             return _Gather_< T >( typename comm_trais<T>::tag(), SendBuffer, RecvBuffer, rootRank, itemCount );
         }
@@ -97,7 +97,7 @@ namespace _MYNAMESPACE_
          * \param itemCount
          * \return
          */
-        int Communicator::Scatter( const typename list_trais<T>::type &SendBuffer, T &RecvBuffer, const int rootRank, const int itemCount )
+        int Communicator::Scatter( const T &SendBuffer, T &RecvBuffer, const int rootRank, const int itemCount )
         {
             return _Scatter_< T >( typename comm_trais<T>::tag(), SendBuffer, RecvBuffer, rootRank, itemCount );
         }
@@ -110,7 +110,7 @@ namespace _MYNAMESPACE_
          * \param itemCount
          * \return
          */
-        int Communicator::AllGather( const T &SendBuffer, typename list_trais<T>::type &RecvBuffer, const int itemCount )
+        int Communicator::AllGather( const T &SendBuffer, T &RecvBuffer, const int itemCount )
         {
             return _AllGather_< T >( typename comm_trais<T>::tag(), SendBuffer, RecvBuffer, itemCount );
         }
@@ -123,8 +123,8 @@ namespace _MYNAMESPACE_
          * \param itemCount
          * \return
          */
-        int Communicator::Alltoall( const typename list_trais<T>::type &SendBuffer,
-                                    typename list_trais<T>::type &RecvBuffer, const int itemCount )
+        int Communicator::Alltoall( const T &SendBuffer,
+                                    T &RecvBuffer, const int itemCount )
         {
             return _Alltoall_< T >( typename comm_trais<T>::tag(), SendBuffer, RecvBuffer, itemCount );
         }

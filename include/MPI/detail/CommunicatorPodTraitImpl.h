@@ -77,7 +77,7 @@ namespace _MYNAMESPACE_
         // Gather
         template<typename T>
         int     Communicator::_Gather_( pod_traits_tag,
-                                        const T &SendBuffer, typename list_trais<T>::type &RecvBuffer,
+                                        const T &SendBuffer, T &RecvBuffer,
                                         const int rootRank, const int itemCount )
         {
             return MPI_Gather( (void*)&SendBuffer, itemCount, MPIDataType<T>(),
@@ -88,7 +88,7 @@ namespace _MYNAMESPACE_
         // Scatter
         template<typename T>
         int     Communicator::_Scatter_( pod_traits_tag,
-                                         const typename list_trais<T>::type &SendBuffer, T &RecvBuffer,
+                                         const T &SendBuffer, T &RecvBuffer,
                                          const int rootRank, const int itemCount )
         {
             return MPI_Scatter( (void*)&SendBuffer, itemCount, MPIDataType<T>(),
@@ -99,7 +99,7 @@ namespace _MYNAMESPACE_
         // AllGather
         template<typename T>
         int     Communicator::_AllGather_( pod_traits_tag,
-                                           const T &SendBuffer, typename list_trais<T>::type &RecvBuffer,
+                                           const T &SendBuffer, T &RecvBuffer,
                                            const int itemCount )
         {
             return MPI_Allgather( (void*)&SendBuffer, itemCount, MPIDataType<T>(),
@@ -109,8 +109,8 @@ namespace _MYNAMESPACE_
         // Alltoall
         template<typename T>
         int     Communicator::_Alltoall_( pod_traits_tag,
-                                          const typename list_trais<T>::type &SendBuffer,
-                                                typename list_trais<T>::type &RecvBuffer,
+                                          const T &SendBuffer,
+                                                T &RecvBuffer,
                                           const int itemCount )
         {
             return MPI_Alltoall( (void*)&SendBuffer, itemCount, MPIDataType<T>(),

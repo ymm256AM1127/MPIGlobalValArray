@@ -40,14 +40,14 @@ namespace _MYNAMESPACE_
              * \brief corrective communication =========================================================================
              */
             template< class T > int Bcast    ( T &dataBufer,      const int srcRank, const int itemCount = 0 );
-            template< class T > int Gather   ( const T &SendBuffer, typename list_trais<T>::type &RecvBuffer,
+            template< class T > int Gather   ( const T &SendBuffer, T &RecvBuffer,
                                                const int rootRank, const int itemCount = 0 );
-            template< class T > int Scatter  ( const typename list_trais<T>::type &SendBuffer, T &RecvBuffer,
+            template< class T > int Scatter  ( const T &SendBuffer, T &RecvBuffer,
                                                const int rootRank, const int itemCount = 0 );
             template< class T > int AllGather( const T &SendBuffer,
-                                               typename list_trais<T>::type &RecvBuffer, const int itemCount = 0 );
-            template< class T > int Alltoall ( const typename list_trais<T>::type &SendBuffer,
-                                               typename list_trais<T>::type &RecvBuffer, const int itemCount = 0 );
+                                               T &RecvBuffer, const int itemCount = 0 );
+            template< class T > int Alltoall ( const T &SendBuffer,
+                                               T &RecvBuffer, const int itemCount = 0 );
 
             template< int OP, class T > int Reduce   ( const typename reducible_type<T>::type &SendBuffer,
                                                        typename reducible_type<T>::type &RecvBuffer,
@@ -77,16 +77,16 @@ namespace _MYNAMESPACE_
             template< class T > inline int _Bcast_      ( pod_traits_tag, T &dataBuffer, const int srcRank, const int itemCount = 0 );
 
             template< class T > inline int _Gather_     ( pod_traits_tag, const T &SendBuffer,
-                                                          typename list_trais<T>::type &RecvBuffer,
+                                                          T &RecvBuffer,
                                                           const int rootRank, const int itemCount = 0 );
-            template< class T > inline int _Scatter_    ( pod_traits_tag, const typename list_trais<T>::type &SendBuffer,
-                                                          T &RecvBuffer, const int rootRank, const int itemCount = 0 );
+            template< class T > inline int _Scatter_    ( pod_traits_tag, const T &SendBuffer,
+                                                          T &RecvBuffer, const int rootRank, const int itemCount );
 
             template< class T > inline int _AllGather_  ( pod_traits_tag, const T &SendBuffer,
-                                                          typename list_trais<T>::type &RecvBuffer,
+                                                          T &RecvBuffer,
                                                           const int itemCount = 0 );
-            template< class T > inline int _Alltoall_   ( pod_traits_tag, const typename list_trais<T>::type &SendBuffer,
-                                                          typename list_trais<T>::type &RecvBuffer, const int itemCount = 0 );
+            template< class T > inline int _Alltoall_   ( pod_traits_tag, const T &SendBuffer,
+                                                          T &RecvBuffer, const int itemCount = 0 );
 
             template< class T > inline int _Reduce_     ( pod_traits_tag, MPI_Op Op,
                                                           const typename reducible_type<T>::type &SendBuffer,
@@ -104,24 +104,17 @@ namespace _MYNAMESPACE_
             template< class T > inline int _Bcast_      ( std_container_traits_tag, T &dataBuffer, const int srcRank, const int itemCount = 0 );
 
             template< class T > inline int _Gather_     ( std_container_traits_tag, const T &SendBuffer,
-                                                          typename list_trais<T>::type &RecvBuffer,
+                                                          T &RecvBuffer,
                                                           const int rootRank, const int itemCount = 0 );
-            template< class T > inline int _Scatter_    ( std_container_traits_tag, const typename list_trais<T>::type &SendBuffer,
+            template< class T > inline int _Scatter_    ( std_container_traits_tag, const T &SendBuffer,
                                                           T &RecvBuffer, const int rootRank, const int itemCount = 0 );
 
             template< class T > inline int _AllGather_  ( std_container_traits_tag, const T &SendBuffer,
-                                                          typename list_trais<T>::type &RecvBuffer,
+                                                          T &RecvBuffer,
                                                           const int itemCount = 0 );
-            template< class T > inline int _Alltoall_   ( std_container_traits_tag, const typename list_trais<T>::type &SendBuffer,
-                                                          typename list_trais<T>::type &RecvBuffer, const int itemCount = 0 );
+            template< class T > inline int _Alltoall_   ( std_container_traits_tag, const T &SendBuffer,
+                                                          T &RecvBuffer, const int itemCount = 0 );
 
-            template< class T > inline int _Reduce_     ( std_container_traits_tag, MPI_Op Op,
-                                                          const typename reducible_type<T>::type &SendBuffer,
-                                                          typename reducible_type<T>::type &RecvBuffer,
-                                                          const int rootRank, const int itemCount = 0 );
-            template< class T > inline int _Allreduce_  ( std_container_traits_tag, MPI_Op Op,
-                                                          const typename reducible_type<T>::type &SendBuffer,
-                                                          typename reducible_type<T>::type &RecvBuffer, const int itemCount = 0 );
 
         };
         typedef SingletonHolder< Communicator >  CommunicatorSingleton;
