@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-//#define _MPI_MULTI_THREAD_ENABLE_
+#define _MPI_MULTI_THREAD_ENABLE_
 
 
 _MYNAMESPACE_::MPI::Environment::Environment()
@@ -35,7 +35,7 @@ void _MYNAMESPACE_::MPI::Environment::Init(int argc, char *argv[])
 #else
     int provided = 0;
     MPI_Init_thread( &argc, &argv, MPI_THREAD_MULTIPLE, &provided );
-    if( provided != MPI_SUCCESS )
+    if( provided != MPI_THREAD_MULTIPLE )
     {
         std::stringstream ss;
         ss << "Error Code: " << NOTSUPPORTTHREADMULTIPLE << " => it does not definde MPI Thread Multiple." << std::endl;

@@ -64,5 +64,6 @@ HEADERS += \
     include/MPI/CustomOperationType.h \
     include/MPI/PreDefinedDataType.h \
     include/MPI/PreDefinedOperationType.h \
-    include/Utility/ScopedMutex.h
+    include/Utility/ScopedMutex.h \
+    include/MPI/detail/CommunicatorSTLContainerTraitImpl.h
 

@@ -163,4 +163,5 @@ namespace _MYNAMESPACE_
 #endif // COMMUNICATORIMPL_H
 
 #include "CommunicatorPodTraitImpl.h"
+#include "CommunicatorSTLContainerTraitImpl.h"
 

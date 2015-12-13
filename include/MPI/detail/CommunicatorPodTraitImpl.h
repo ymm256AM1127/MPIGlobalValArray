@@ -8,6 +8,8 @@
 #include "../PreDefinedOperationType.h"
 #include "../../Utility/ScopedMutex.h"
 
+#include <iostream>
+
 namespace _MYNAMESPACE_
 {
     namespace MPI

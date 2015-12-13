@@ -3,6 +3,7 @@
 
 #include "../SharedLibraryDefine.h"
 #include <type_traits>
+#include "is_pod.h"
 
 //#include <vector>
 //#include <list>

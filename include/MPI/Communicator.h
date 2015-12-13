@@ -10,6 +10,7 @@
 #include <mpi.h>
 #include "CommunicatorTraits.h"
 #include <mutex>
+#include <thread>
 
 namespace _MYNAMESPACE_
 {
@@ -34,11 +35,11 @@ namespace _MYNAMESPACE_
             template< class T > int Recv     ( T &dataRecv,       const int source,  const int count = 0 );
             template< class T > int Isend    ( const T &dataSend, const int dest,    const int count = 0 );
             template< class T > int Irecv    ( T &dataRecv,       const int source,  const int count = 0 );
-            template< class T > int Bcast    ( T &dataBufer,      const int srcRank, const int itemCount = 0 );
 
             /*!
              * \brief corrective communication =========================================================================
              */
+            template< class T > int Bcast    ( T &dataBufer,      const int srcRank, const int itemCount = 0 );
             template< class T > int Gather   ( const T &SendBuffer, typename list_trais<T>::type &RecvBuffer,
                                                const int rootRank, const int itemCount = 0 );
             template< class T > int Scatter  ( const typename list_trais<T>::type &SendBuffer, T &RecvBuffer,
@@ -61,7 +62,13 @@ namespace _MYNAMESPACE_
             MPI_Comm                    m_Commnunicator;
             std::vector<MPI_Request>    m_vectMPI_Requests;
             std::mutex                  m_Mutex;
+            std::vector<std::thread>    m_vectThreadPool;
 
+            /*!
+             * \brief ここにデータ形式の異なるトレイツのプロトタイプを行う。 ====================================================
+             */
+
+            //! POD(Plain Old Data)のプロトタイプ
             template< class T > inline int _Send_       ( pod_traits_tag, const T &dataSend, const int dest, const int count = 0 );
             template< class T > inline int _Recv_       ( pod_traits_tag, T &dataRecv, const int source, const int count );
             template< class T > inline int _Isend_      ( pod_traits_tag, const T &dataSend, const int dest, const int count = 0 );
@@ -86,6 +93,33 @@ namespace _MYNAMESPACE_
                                                           typename reducible_type<T>::type &RecvBuffer,
                                                           const int rootRank, const int itemCount = 0 );
             template< class T > inline int _Allreduce_  ( pod_traits_tag, MPI_Op Op,
+                                                          const typename reducible_type<T>::type &SendBuffer,
+                                                          typename reducible_type<T>::type &RecvBuffer, const int itemCount = 0 );
+            //! STLコンテナのプロトタイプ
+            template< class T > inline int _Send_       ( std_container_traits_tag, const T &dataSend, const int dest, const int count = 0 );
+            template< class T > inline int _Recv_       ( std_container_traits_tag, T &dataRecv, const int source, const int count );
+            template< class T > inline int _Isend_      ( std_container_traits_tag, const T &dataSend, const int dest, const int count = 0 );
+            template< class T > inline int _Irecv_      ( std_container_traits_tag, T &dataRecv, const int source, const int count );
+
+            template< class T > inline int _Bcast_      ( std_container_traits_tag, T &dataBuffer, const int srcRank, const int itemCount = 0 );
+
+            template< class T > inline int _Gather_     ( std_container_traits_tag, const T &SendBuffer,
+                                                          typename list_trais<T>::type &RecvBuffer,
+                                                          const int rootRank, const int itemCount = 0 );
+            template< class T > inline int _Scatter_    ( std_container_traits_tag, const typename list_trais<T>::type &SendBuffer,
+                                                          T &RecvBuffer, const int rootRank, const int itemCount = 0 );
+
+            template< class T > inline int _AllGather_  ( std_container_traits_tag, const T &SendBuffer,
+                                                          typename list_trais<T>::type &RecvBuffer,
+                                                          const int itemCount = 0 );
+            template< class T > inline int _Alltoall_   ( std_container_traits_tag, const typename list_trais<T>::type &SendBuffer,
+                                                          typename list_trais<T>::type &RecvBuffer, const int itemCount = 0 );
+
+            template< class T > inline int _Reduce_     ( std_container_traits_tag, MPI_Op Op,
+                                                          const typename reducible_type<T>::type &SendBuffer,
+                                                          typename reducible_type<T>::type &RecvBuffer,
+                                                          const int rootRank, const int itemCount = 0 );
+            template< class T > inline int _Allreduce_  ( std_container_traits_tag, MPI_Op Op,
                                                           const typename reducible_type<T>::type &SendBuffer,
                                                           typename reducible_type<T>::type &RecvBuffer, const int itemCount = 0 );
 

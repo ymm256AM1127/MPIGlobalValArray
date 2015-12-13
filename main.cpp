@@ -34,6 +34,61 @@ int main(int argc, char *argv[])
         dst = 0;
     }
 
+    //!  P2P通信の確認(vector版)
+    if( MPIEnvPtr->GetMPIRank() == 0 )
+    {
+        MPICommPtr->Send( bufferOut, 1 );
+    }
+    else if( MPIEnvPtr->GetMPIRank() == 1 )
+    {
+        MPICommPtr->Recv( bufferIn, 0 );
+    }
+
+    //!  非同期P2P通信の確認(vector版)
+    if( MPIEnvPtr->GetMPIRank() == 0 )
+    {
+        MPICommPtr->Isend( bufferOut, 1 );
+    }
+    else if( MPIEnvPtr->GetMPIRank() == 1 )
+    {
+        MPICommPtr->Irecv( bufferIn, 0 );
+    }
+
+    MPICommPtr->WaitAll();
+
+    MPICommPtr->Barrier();
+    //!  P2P通信の確認(string版)
+    std::string strout("This is send buffer");
+    std::string strin;
+    if( MPIEnvPtr->GetMPIRank() == 0 )
+    {
+        MPICommPtr->Send( strout, 1 );
+    }
+    else if( MPIEnvPtr->GetMPIRank() == 1 )
+    {
+        MPICommPtr->Recv( strin, 0 );
+        std::cout << strin << std::endl;
+    }
+
+    MPICommPtr->Barrier();
+
+    //! 集団通信の確認(string)
+    std::string strbcast;
+    if( MPIEnvPtr->IsRootRank() )
+    {
+        strbcast = std::string( "This is from RootRank." );
+    }
+
+    MPICommPtr->Bcast( strbcast, MPIEnvPtr->GetRootRank() );
+
+    for( auto ii = 0; ii < MPIEnvPtr->GetMPISize(); ii++ )
+    {
+        if( MPIEnvPtr->GetMPIRank() == ii )
+        {
+            std::cout << "[BCAST TEST] Rank: " << MPIEnvPtr->GetMPIRank() << " => " << strbcast << std::endl;
+        }
+        MPICommPtr->Barrier();
+    }
     qint64 elapsed = 0;
     MPICommPtr->Barrier();
 
