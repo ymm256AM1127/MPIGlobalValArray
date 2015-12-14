@@ -310,7 +310,7 @@ namespace _MYNAMESPACE_
             }
 
             //! 受信バッファサイズの計算
-            int RecvSize = MinSendSize * MPISize;
+            int RecvSize = MinSendSize;
 
             T recvbuffer( RecvSize , 0 );
 
