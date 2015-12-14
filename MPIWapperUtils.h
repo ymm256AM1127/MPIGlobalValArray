@@ -4,14 +4,17 @@
 #include <mpi.h>
 #include <unordered_map>
 
-//! MPI Window�̃������Ǘ��pHashmap
+//! MPI Windowのメモリ管理用Hashmap
 extern std::unordered_map< void*, MPI_Win > MPIWinAllocMap;
+extern bool MPIRunningFlag;
+
+void        MPIInit( int &argc, char** &argv );
 
 /*!
  * \brief MPIFinalize \n
- * MPI�̓v���O�����I������MPI_Finalize()���ĂԕK�v�����邪�A\n
- * MPI_Finalize()���Ă΂ꂽ���MPI Window�֘A�̃�������\n
- * �������ƃG���[���o�邽�߁A���b�p�[��p�ӂ���B
+ * MPIはプログラム終了時にMPI_Finalize()を呼ぶ必要があるが、\n
+ * MPI_Finalize()が呼ばれた後にMPI Window関連のメモリを\n
+ * 解放するとエラーが出るため、ラッパーを用意する。
  */
 void        MPIFinalize();
 
