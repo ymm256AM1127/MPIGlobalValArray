@@ -15,7 +15,7 @@ namespace _MYNAMESPACE_
             static const bool value = false;
         };
 
-        #define ENSEMBLE_IS_POD_BASE( type, flag ) template< > \
+        #define MY_MPL_IS_POD_BASE( type, flag ) template< > \
         struct is_pod_base< type > \
         { \
             static const bool value = flag; \
@@ -25,23 +25,23 @@ namespace _MYNAMESPACE_
          * \brief define Plain Old Data Types
          */
         // void type is not regarded as plain data type in this library.
-        //ENSEMBLE_IS_POD_BASE( void,                 true );
+        //MY_MPL_IS_POD_BASE( void,                 true );
 
-        ENSEMBLE_IS_POD_BASE( bool,                 true );
-        ENSEMBLE_IS_POD_BASE( char,                 true );
-        ENSEMBLE_IS_POD_BASE( short,                true );
-        ENSEMBLE_IS_POD_BASE( int,                  true );
-        ENSEMBLE_IS_POD_BASE( long,                 true );
-        ENSEMBLE_IS_POD_BASE( long long,            true );
+        MY_MPL_IS_POD_BASE( bool,                 true );
+        MY_MPL_IS_POD_BASE( char,                 true );
+        MY_MPL_IS_POD_BASE( short,                true );
+        MY_MPL_IS_POD_BASE( int,                  true );
+        MY_MPL_IS_POD_BASE( long,                 true );
+        MY_MPL_IS_POD_BASE( long long,            true );
 
-        ENSEMBLE_IS_POD_BASE( unsigned char,        true );
-        ENSEMBLE_IS_POD_BASE( unsigned short,       true );
-        ENSEMBLE_IS_POD_BASE( unsigned int,         true );
-        ENSEMBLE_IS_POD_BASE( unsigned long,        true );
-        ENSEMBLE_IS_POD_BASE( unsigned long long,   true );
+        MY_MPL_IS_POD_BASE( unsigned char,        true );
+        MY_MPL_IS_POD_BASE( unsigned short,       true );
+        MY_MPL_IS_POD_BASE( unsigned int,         true );
+        MY_MPL_IS_POD_BASE( unsigned long,        true );
+        MY_MPL_IS_POD_BASE( unsigned long long,   true );
 
-        ENSEMBLE_IS_POD_BASE( float,                true );
-        ENSEMBLE_IS_POD_BASE( double,               true );
+        MY_MPL_IS_POD_BASE( float,                true );
+        MY_MPL_IS_POD_BASE( double,               true );
 
         template< typename T >
         /*!

@@ -13,6 +13,7 @@ namespace _MYNAMESPACE_
         /*!
          * Base template MPIDATATYPE
          */
+
         template < class T > inline MPI_Datatype MPIDATATYPE() { return MPI_Datatype(0); }
 
         template < class T > inline MPI_Datatype MPIDataType()
