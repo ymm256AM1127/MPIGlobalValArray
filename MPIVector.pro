@@ -23,14 +23,14 @@ win32{
 }
 
 macx:!unix{
-    MPIPATH = /opt/mpich
+    MPIPATH = /opt/mpi
     MPILIB = $$MPIPATH/lib
     MPIINC = $$MPIPATH/include
     LIBS += -L$$MPILIB -lmpi
 }
 
 unix{
-    MPIPATH = /opt/mpich
+    MPIPATH = /opt/mpi
     MPILIB = $$MPIPATH/lib
     MPIINC = $$MPIPATH/include
     LIBS += -L$$MPILIB -lmpi
@@ -65,5 +65,9 @@ HEADERS += \
     include/MPI/PreDefinedDataType.h \
     include/MPI/PreDefinedOperationType.h \
     include/Utility/ScopedMutex.h \
-    include/MPI/detail/CommunicatorSTLContainerTraitImpl.h
+    include/MPI/detail/CommunicatorSTLContainerTraitImpl.h \
+    include/MPI/PotinToPointCommPod.h \
+    include/MPI/detail/PointToPointCommPodImpl.h \
+    include/MPI/detail/PointToPointCommSTLContainerImpl.h \
+    include/MPI/PotinToPointCommSTLContainer.h
 

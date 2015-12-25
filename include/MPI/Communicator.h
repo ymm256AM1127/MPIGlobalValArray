@@ -23,10 +23,16 @@ namespace _MYNAMESPACE_
             Communicator();
             ~Communicator();
 
-            void                Barrier() const;
-            void                SetCommunicator( const MPI_Comm& comm );
-            void                SetTag( const int tag );
-            void                WaitAll();
+            void                        Barrier() const;
+            void                        SetCommunicator( const MPI_Comm& comm );
+            void                        SetTag( const int tag );
+            void                        WaitAll();
+
+            int                         GetTag() const;
+            MPI_Comm                    GetCommunicator();
+            std::vector<MPI_Request>&   MPI_Requests();
+            std::mutex&                 Mutex();
+            std::vector<std::thread>&   ThreadPool();
 
             /*!
              * \brief point to point communication =====================================================================
@@ -69,10 +75,10 @@ namespace _MYNAMESPACE_
              */
 
             //! POD(Plain Old Data)のプロトタイプ
-            template< class T > inline int _Send_       ( pod_traits_tag, const T &dataSend, const int dest, const int count = 0 );
-            template< class T > inline int _Recv_       ( pod_traits_tag, T &dataRecv, const int source, const int count );
-            template< class T > inline int _Isend_      ( pod_traits_tag, const T &dataSend, const int dest, const int count = 0 );
-            template< class T > inline int _Irecv_      ( pod_traits_tag, T &dataRecv, const int source, const int count );
+//            template< class T > inline int _Send_       ( pod_traits_tag, const T &dataSend, const int dest, const int count = 0 );
+//            template< class T > inline int _Recv_       ( pod_traits_tag, T &dataRecv, const int source, const int count );
+//            template< class T > inline int _Isend_      ( pod_traits_tag, const T &dataSend, const int dest, const int count = 0 );
+//            template< class T > inline int _Irecv_      ( pod_traits_tag, T &dataRecv, const int source, const int count );
 
             template< class T > inline int _Bcast_      ( pod_traits_tag, T &dataBuffer, const int srcRank, const int itemCount = 0 );
 
@@ -96,10 +102,10 @@ namespace _MYNAMESPACE_
                                                           const typename reducible_type<T>::type &SendBuffer,
                                                           typename reducible_type<T>::type &RecvBuffer, const int itemCount = 0 );
             //! STLコンテナのプロトタイプ
-            template< class T > inline int _Send_       ( std_container_traits_tag, const T &dataSend, const int dest, const int count = 0 );
-            template< class T > inline int _Recv_       ( std_container_traits_tag, T &dataRecv, const int source, const int count );
-            template< class T > inline int _Isend_      ( std_container_traits_tag, const T &dataSend, const int dest, const int count = 0 );
-            template< class T > inline int _Irecv_      ( std_container_traits_tag, T &dataRecv, const int source, const int count );
+//            template< class T > inline int _Send_       ( std_container_traits_tag, const T &dataSend, const int dest, const int count = 0 );
+//            template< class T > inline int _Recv_       ( std_container_traits_tag, T &dataRecv, const int source, const int count );
+//            template< class T > inline int _Isend_      ( std_container_traits_tag, const T &dataSend, const int dest, const int count = 0 );
+//            template< class T > inline int _Irecv_      ( std_container_traits_tag, T &dataRecv, const int source, const int count );
 
             template< class T > inline int _Bcast_      ( std_container_traits_tag, T &dataBuffer, const int srcRank, const int itemCount = 0 );
 
@@ -117,6 +123,7 @@ namespace _MYNAMESPACE_
 
 
         };
+
         typedef SingletonHolder< Communicator >  CommunicatorSingleton;
     }
 }

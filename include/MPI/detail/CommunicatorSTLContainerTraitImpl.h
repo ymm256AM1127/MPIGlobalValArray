@@ -16,94 +16,94 @@ namespace _MYNAMESPACE_
 {
     namespace MPI
     {
-        /*!
-         * \brief Implemantation of std_container_traits_tag ============================================
-         */
-        // _Send_
-        template<typename T>
-        int Communicator::_Send_( std_container_traits_tag, const T &dataSend, const int dest, const int count )
-        {
-            //! ここでコンテナがPOD型であるかどうかを確認する。
-            //! 複雑な型の場合はenable_ifでSFINAEが働くようにする。
-            using value_type = typename std::enable_if< is_pod_with_complex< typename T::value_type >::value, typename T::value_type >::type;
+//        /*!
+//         * \brief Implemantation of std_container_traits_tag ============================================
+//         */
+//        // _Send_
+//        template<typename T>
+//        int Communicator::_Send_( std_container_traits_tag, const T &dataSend, const int dest, const int count )
+//        {
+//            //! ここでコンテナがPOD型であるかどうかを確認する。
+//            //! 複雑な型の場合はenable_ifでSFINAEが働くようにする。
+//            using value_type = typename std::enable_if< is_pod_with_complex< typename T::value_type >::value, typename T::value_type >::type;
 
-            int retival = 0;
+//            int retival = 0;
 
-            int sendsize = 0;
+//            int sendsize = 0;
 
-            //! size check
-            if( count == 0 )
-            {
-                sendsize = dataSend.size();
-            }
-            else if( static_cast<int>( dataSend.size() ) > count )  //例外を投げておく。MPIは例外が出た時点で止まる。
-            {
-                int myrank = 0;
-                MPI_Comm_rank( m_Commnunicator, &myrank );
-                std::stringstream ss;
-                ss << "Error Code: " << P2PCOMMSIZEERROR << " on file: " << __FILE__ << ", Line: " << __LINE__ << ", Rank: " << myrank << std::endl;
-                throw std::range_error( ss.str() );
-            }
+//            //! size check
+//            if( count == 0 )
+//            {
+//                sendsize = dataSend.size();
+//            }
+//            else if( static_cast<int>( dataSend.size() ) > count )  //例外を投げておく。MPIは例外が出た時点で止まる。
+//            {
+//                int myrank = 0;
+//                MPI_Comm_rank( m_Commnunicator, &myrank );
+//                std::stringstream ss;
+//                ss << "Error Code: " << P2PCOMMSIZEERROR << " on file: " << __FILE__ << ", Line: " << __LINE__ << ", Rank: " << myrank << std::endl;
+//                throw std::range_error( ss.str() );
+//            }
 
-            retival = MPI_Send( (void*)dataSend.data(), sendsize, MPIDataType<value_type>(), dest, m_i32Tag, m_Commnunicator );
+//            retival = MPI_Send( (void*)dataSend.data(), sendsize, MPIDataType<value_type>(), dest, m_i32Tag, m_Commnunicator );
 
-            return retival;
-        }
-        // _Recv_
-        template<typename T>
-        int     Communicator::_Recv_( std_container_traits_tag, T &dataRecv, const int source, const int count )
-        {
-            using value_type = typename std::enable_if< is_pod_with_complex< typename T::value_type >::value, typename T::value_type >::type;
+//            return retival;
+//        }
+//        // _Recv_
+//        template<typename T>
+//        int     Communicator::_Recv_( std_container_traits_tag, T &dataRecv, const int source, const int count )
+//        {
+//            using value_type = typename std::enable_if< is_pod_with_complex< typename T::value_type >::value, typename T::value_type >::type;
 
-            int retival = 0;
+//            int retival = 0;
 
-            MPI_Status status;
-            //! プローブで送られてくるステータスを確認する
-            MPI_Probe( source, m_i32Tag, m_Commnunicator, &status);
+//            MPI_Status status;
+//            //! プローブで送られてくるステータスを確認する
+//            MPI_Probe( source, m_i32Tag, m_Commnunicator, &status);
 
-            int sendsize = count;
-            //! ステータスからサイズを取得する。（データ型に注意）
-            MPI_Get_count(&status, MPIDataType<value_type>(), &sendsize);
+//            int sendsize = count;
+//            //! ステータスからサイズを取得する。（データ型に注意）
+//            MPI_Get_count(&status, MPIDataType<value_type>(), &sendsize);
 
-            T tempbuffer( sendsize, 0 );
+//            T tempbuffer( sendsize, 0 );
 
-            retival = MPI_Recv( (void*)tempbuffer.data(), sendsize, MPIDataType<value_type>(), source, m_i32Tag, m_Commnunicator, MPI_STATUS_IGNORE );
+//            retival = MPI_Recv( (void*)tempbuffer.data(), sendsize, MPIDataType<value_type>(), source, m_i32Tag, m_Commnunicator, MPI_STATUS_IGNORE );
 
-            dataRecv.swap( tempbuffer );
+//            dataRecv.swap( tempbuffer );
 
-            return retival;
-        }
+//            return retival;
+//        }
 
-        // _Iend_
-        template<typename T>
-        int     Communicator::_Isend_( std_container_traits_tag, const T &dataSend, const int dest, const int count )
-        {
-            int retival = 0;
+//        // _Iend_
+//        template<typename T>
+//        int     Communicator::_Isend_( std_container_traits_tag, const T &dataSend, const int dest, const int count )
+//        {
+//            int retival = 0;
 
-            Utility::ScopedMutex<std::mutex> locker( &m_Mutex );
-            std::function<void()> func = [&dataSend, dest, count, this]()
-            {
-                this->_Send_( std_container_traits_tag(), dataSend, dest, count );
-            };
-            m_vectThreadPool.push_back(  std::thread( func ) );
+//            Utility::ScopedMutex<std::mutex> locker( &m_Mutex );
+//            std::function<void()> func = [&dataSend, dest, count, this]()
+//            {
+//                this->_Send_( std_container_traits_tag(), dataSend, dest, count );
+//            };
+//            m_vectThreadPool.push_back(  std::thread( func ) );
 
-            return retival;
-        }
-        // _Irecv_
-        template<typename T>
-        int     Communicator::_Irecv_( std_container_traits_tag,          T &dataRecv, const int source, const int count )
-        {
-            int retival = 0;
+//            return retival;
+//        }
+//        // _Irecv_
+//        template<typename T>
+//        int     Communicator::_Irecv_( std_container_traits_tag,          T &dataRecv, const int source, const int count )
+//        {
+//            int retival = 0;
 
-            Utility::ScopedMutex<std::mutex> locker( &m_Mutex );
-            std::function<void()> func = [ &dataRecv, source, count, this]()
-            {
-                this->_Recv_( std_container_traits_tag(), dataRecv, source, count );
-            };
-            m_vectThreadPool.push_back( std::thread( func ) );
+//            Utility::ScopedMutex<std::mutex> locker( &m_Mutex );
+//            std::function<void()> func = [ &dataRecv, source, count, this]()
+//            {
+//                this->_Recv_( std_container_traits_tag(), dataRecv, source, count );
+//            };
+//            m_vectThreadPool.push_back( std::thread( func ) );
 
-            return retival;
-        }
+//            return retival;
+//        }
 
 
         // Bcast

@@ -16,8 +16,8 @@ int main(int argc, char *argv[])
     //! MPIの初期化
     MPIEnvPtr->Init( argc, argv );
 
-    std::vector<double> bufferIn( 1 << 22 );
-    std::vector<double> bufferOut( 1 << 22   );
+    std::vector<double> bufferIn( 1 << 12 );
+    std::vector<double> bufferOut( 1 << 12   );
 
     int myrank  = MPIEnvPtr->GetMPIRank();
     int mpisize = MPIEnvPtr->GetMPISize();

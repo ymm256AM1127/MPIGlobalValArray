@@ -14,58 +14,58 @@ namespace _MYNAMESPACE_
 {
     namespace MPI
     {
-        /*!
-         * \brief Implemantation of pod_traits_tag =====================================================
-         */
-        // _Send_
-        template< class T >
-        int     Communicator::_Send_( pod_traits_tag, const T &dataSend, const int dest, const int count )
-        {
-            int retival = 0;
+//        /*!
+//         * \brief Implemantation of pod_traits_tag =====================================================
+//         */
+//        // _Send_
+//        template< class T >
+//        int     Communicator::_Send_( pod_traits_tag, const T &dataSend, const int dest, const int count )
+//        {
+//            int retival = 0;
 
-            retival = MPI_Send( (void*)&dataSend, count, MPIDataType<T>(), dest, m_i32Tag, m_Commnunicator );
+//            retival = MPI_Send( (void*)&dataSend, count, MPIDataType<T>(), dest, m_i32Tag, m_Commnunicator );
 
-            return retival;
-        }
-        // _Recv_
-        template<typename T>
-        int     Communicator::_Recv_( pod_traits_tag,     T &dataRecv, const int source, const int count )
-        {
-            int retival = 0;
+//            return retival;
+//        }
+//        // _Recv_
+//        template<typename T>
+//        int     Communicator::_Recv_( pod_traits_tag,     T &dataRecv, const int source, const int count )
+//        {
+//            int retival = 0;
 
-            retival = MPI_Recv( (void*)&dataRecv, count, MPIDataType<T>(), source, m_i32Tag, m_Commnunicator, MPI_STATUS_IGNORE );
+//            retival = MPI_Recv( (void*)&dataRecv, count, MPIDataType<T>(), source, m_i32Tag, m_Commnunicator, MPI_STATUS_IGNORE );
 
-            return retival;
-        }
+//            return retival;
+//        }
 
-        // _Iend_
-        template<typename T>
-        int     Communicator::_Isend_( pod_traits_tag, const T &dataSend, const int dest, const int count )
-        {
-            int retival = 0;
-            Utility::ScopedMutex<std::mutex> locker( &m_Mutex );
-            m_vectMPI_Requests.push_back( MPI_Request() );
-            int i32LastIndex = m_vectMPI_Requests.size() - 1;
+//        // _Iend_
+//        template<typename T>
+//        int     Communicator::_Isend_( pod_traits_tag, const T &dataSend, const int dest, const int count )
+//        {
+//            int retival = 0;
+//            Utility::ScopedMutex<std::mutex> locker( &m_Mutex );
+//            m_vectMPI_Requests.push_back( MPI_Request() );
+//            int i32LastIndex = m_vectMPI_Requests.size() - 1;
 
-            retival = MPI_Isend( (void*)&dataSend, count, MPIDataType<T>(), dest,
-                                 m_i32Tag, m_Commnunicator, &m_vectMPI_Requests[i32LastIndex] );
+//            retival = MPI_Isend( (void*)&dataSend, count, MPIDataType<T>(), dest,
+//                                 m_i32Tag, m_Commnunicator, &m_vectMPI_Requests[i32LastIndex] );
 
-            return retival;
-        }
-        // _Irecv_
-        template<typename T>
-        int     Communicator::_Irecv_( pod_traits_tag,          T &dataRecv, const int source, const int count )
-        {
-            int retival = 0;
-            Utility::ScopedMutex<std::mutex> locker( &m_Mutex );
-            m_vectMPI_Requests.push_back( MPI_Request() );
-            int i32LastIndex = m_vectMPI_Requests.size() - 1;
+//            return retival;
+//        }
+//        // _Irecv_
+//        template<typename T>
+//        int     Communicator::_Irecv_( pod_traits_tag,          T &dataRecv, const int source, const int count )
+//        {
+//            int retival = 0;
+//            Utility::ScopedMutex<std::mutex> locker( &m_Mutex );
+//            m_vectMPI_Requests.push_back( MPI_Request() );
+//            int i32LastIndex = m_vectMPI_Requests.size() - 1;
 
-            retival = MPI_Irecv( (void*)&dataRecv, count, MPIDataType<T>(), source,
-                                 m_i32Tag, m_Commnunicator, &m_vectMPI_Requests[i32LastIndex] );
+//            retival = MPI_Irecv( (void*)&dataRecv, count, MPIDataType<T>(), source,
+//                                 m_i32Tag, m_Commnunicator, &m_vectMPI_Requests[i32LastIndex] );
 
-            return retival;
-        }
+//            return retival;
+//        }
 
         // Bcast
         template<typename T>

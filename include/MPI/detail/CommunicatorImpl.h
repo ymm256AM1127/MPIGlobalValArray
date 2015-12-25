@@ -2,6 +2,8 @@
 #define COMMUNICATORIMPL_H
 
 #include "../Communicator.h"
+#include "../PotinToPointCommPod.h"
+#include "../PotinToPointCommSTLContainer.h"
 
 namespace _MYNAMESPACE_
 {
@@ -17,7 +19,7 @@ namespace _MYNAMESPACE_
          */
         int Communicator::Send( const T &dataSend, const int dest, const int count )
         {
-            return _Send_< T >( typename comm_trais<T>::tag(), dataSend, dest, count );
+            return _Send_< T >( typename comm_trais<T>::tag(), dataSend, dest, m_i32Tag, this, count );
         }
 
         template< class T >
@@ -30,7 +32,7 @@ namespace _MYNAMESPACE_
          */
         int Communicator::Recv(  T &dataRecv, const int source, const int count )
         {
-            return _Recv_< T >( typename comm_trais<T>::tag(), dataRecv, source, count );
+            return _Recv_< T >( typename comm_trais<T>::tag(), dataRecv, source, m_i32Tag, this, count );
         }
 
         template< class T >
@@ -43,7 +45,7 @@ namespace _MYNAMESPACE_
          */
         int Communicator::Isend( const T &dataSend, const int dest, const int count )
         {
-            return _Isend_< T >( typename comm_trais<T>::tag(),  dataSend, dest, count);
+            return _Isend_< T >( typename comm_trais<T>::tag(),  dataSend, dest, m_i32Tag, this, count);
         }
 
         template< class T >
@@ -56,7 +58,7 @@ namespace _MYNAMESPACE_
          */
         int Communicator::Irecv(  T &dataRecv, const int source, const int count )
         {
-            return _Irecv_( typename comm_trais<T>::tag(), dataRecv, source, count );
+            return _Irecv_( typename comm_trais<T>::tag(), dataRecv, source, m_i32Tag, this, count );
         }
 
 
