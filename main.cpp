@@ -9,6 +9,7 @@
 
 #include "include/MPI/Environment.h"
 #include "include/MPI/Communicator.h"
+#include "include/MPI/WindowObject.h"
 
 const int ExecCount = 100;
 
@@ -195,6 +196,36 @@ int main(int argc, char *argv[])
 
     MPICommPtr->Barrier();
 
+    //! RMAの確認 =======================================================================================================
+
+    _MYNAMESPACE_::MPI::WindowObject<double> rmaobj( 10000, MPI_COMM_WORLD );
+
+MPI_Barrier( MPI_COMM_WORLD );
+
+     double dval = 100.0 * (MPIEnvPtr->GetMPIRank() + 1);
+     double darray[6000] = {0.0};
+//     rmaobj.Fence();
+     rmaobj.Write( dval, 9999 );
+     rmaobj.Write( 4.5, 9999 );
+     rmaobj.Write( darray, 0, 6000 );
+//     rmaobj.Fence();
+
+//    MPI_Barrier( MPI_COMM_WORLD );
+//    rmaobj.Fence();
+
+//    if( myrank == 1 )
+//    {
+//        auto dval = rmaobj.ReadOneValue( 9999 );
+//    }
+
+    for( auto ii = 0; ii < MPIEnvPtr->GetMPISize(); ii++ )
+    {
+        if( MPIEnvPtr->GetMPIRank() == ii )
+        {
+            std::cout << MPIEnvPtr->GetHostName() << " RMA Get " << rmaobj.Read( 9999 ) << std::endl;
+        }
+        MPICommPtr->Barrier();
+    }
     qint64 totalelapsed1 = 0;
     MPICommPtr->Allreduce<_MYNAMESPACE_::MPI::SUM, qint64>( elapsed, totalelapsed1, 1);
 

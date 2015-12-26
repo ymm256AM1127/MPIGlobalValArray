@@ -73,4 +73,7 @@ HEADERS += \
     include/MPI/detail/CollectiveCommPodImpl.h \
     include/MPI/detail/CollectiveCommSTLContainerImpl.h \
     include/MPI/CollectiveCommSTLContainer.h
+    include/MPI/WindowObject.h \
+    include/MPI/detail/WindowObjectImpl.h \
+    include/MPL/ZeroValue.h
 

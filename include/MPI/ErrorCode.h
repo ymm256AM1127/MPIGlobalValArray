@@ -15,7 +15,8 @@ namespace _MYNAMESPACE_
             BROADCASTSIZEERROR       = -4,
             GATHERSIZEERROR          = -5,
             SCCATERSIZEERROR         = -6,
-            ALLTOALLSIZEERROR        = -7
+            ALLTOALLSIZEERROR        = -7,
+            CANNOTCREATEWINDOW       = -8
         } ERROR_CODE;
     }
 }
