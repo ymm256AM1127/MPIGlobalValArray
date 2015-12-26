@@ -25,20 +25,10 @@ namespace _MYNAMESPACE_
             void                Init( int argc, char *argv[] );
             void                Finalize();
             void                Abort( const int error_code );
-            bool                IsRootRank()  const;
-            int                 GetRootRank() const;
-            int                 GetMPIRank()  const;
-            int                 GetMPISize()  const;
             std::string         GetHostName() const;
             bool                IsLocalNodeMaster() const;
 
-            bool                IsRootRank( const MPI_Comm& comm ) const;
-            int                 GetMPIRank( const MPI_Comm& comm ) const ;
-            int                 GetMPISize( const MPI_Comm& comm ) const ;
-
         private:
-            int                 m_i32MPIRank;
-            int                 m_i32MPISize;
             std::string         m_strHostName;
             MPIRankMap          m_GlobalMPIRankMap;
             MPIRankMap          m_LocalMPIRankMap;
