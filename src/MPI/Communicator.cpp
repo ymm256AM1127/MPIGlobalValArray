@@ -7,20 +7,20 @@ namespace _MYNAMESPACE_
     {
         Communicator::Communicator() : m_i32Tag( 0 ), m_Commnunicator( MPI_COMM_WORLD )
         {
+            MPI_Comm_rank( m_Commnunicator, &m_i32MPIRank );
+            MPI_Comm_size( m_Commnunicator, &m_i32MPISize );
+        }
 
+        Communicator::Communicator( const MPI_Comm comm, const int tag ) :
+            m_i32Tag( tag ), m_Commnunicator( comm )
+        {
+            MPI_Comm_rank( m_Commnunicator, &m_i32MPIRank );
+            MPI_Comm_size( m_Commnunicator, &m_i32MPISize );
         }
 
         Communicator::~Communicator()
         {
 
-        }
-
-        /*!
-         * \brief _MYNAMESPACE_::MPI::Communicator::Barrier
-         */
-        void Communicator::Barrier() const
-        {
-            MPI_Barrier( m_Commnunicator );
         }
 
         /*!
@@ -67,31 +67,6 @@ namespace _MYNAMESPACE_
                 std::vector<std::thread> newthreadpool;
                 m_vectThreadPool.swap( newthreadpool );
             }
-        }
-
-        int Communicator::GetTag() const
-        {
-            return m_i32Tag;
-        }
-
-        MPI_Comm Communicator::GetCommunicator()
-        {
-            return m_Commnunicator;
-        }
-
-        std::vector<MPI_Request> &Communicator::MPI_Requests()
-        {
-            return m_vectMPI_Requests;
-        }
-
-        std::mutex &Communicator::Mutex()
-        {
-            return m_Mutex;
-        }
-
-        std::vector<std::thread> &Communicator::ThreadPool()
-        {
-            return m_vectThreadPool;
         }
     }
 }

@@ -2,9 +2,10 @@
 #include <mpi.h>
 #include <algorithm>
 #include <numeric>
-#include "MPISharedVector.h"
+//#include "MPISharedVector.h"
 #include <QElapsedTimer>
 #include <memory.h>
+#include <QDebug>
 
 #include "include/MPI/Environment.h"
 #include "include/MPI/Communicator.h"
@@ -19,10 +20,10 @@ int main(int argc, char *argv[])
     std::vector<double> bufferIn( 1 << 12 );
     std::vector<double> bufferOut( 1 << 12   );
 
-    int myrank  = MPIEnvPtr->GetMPIRank();
-    int mpisize = MPIEnvPtr->GetMPISize();
-    int src     = MPIEnvPtr->GetMPIRank() - 1;
-    int dst     = MPIEnvPtr->GetMPIRank() + 1;
+    int myrank  = MPICommPtr->GetMPIRank();
+    int mpisize = MPICommPtr->GetMPISize();
+    int src     = MPICommPtr->GetMPIRank() - 1;
+    int dst     = MPICommPtr->GetMPIRank() + 1;
 
     if( src < 0 )
     {
@@ -35,21 +36,21 @@ int main(int argc, char *argv[])
     }
 
     //!  P2P通信の確認(vector版)
-    if( MPIEnvPtr->GetMPIRank() == 0 )
+    if( MPICommPtr->GetMPIRank() == 0 )
     {
         MPICommPtr->Send( bufferOut, 1 );
     }
-    else if( MPIEnvPtr->GetMPIRank() == 1 )
+    else if( MPICommPtr->GetMPIRank() == 1 )
     {
         MPICommPtr->Recv( bufferIn, 0 );
     }
 
     //!  非同期P2P通信の確認(vector版)
-    if( MPIEnvPtr->GetMPIRank() == 0 )
+    if( MPICommPtr->GetMPIRank() == 0 )
     {
         MPICommPtr->Isend( bufferOut, 1 );
     }
-    else if( MPIEnvPtr->GetMPIRank() == 1 )
+    else if( MPICommPtr->GetMPIRank() == 1 )
     {
         MPICommPtr->Irecv( bufferIn, 0 );
     }
@@ -60,11 +61,11 @@ int main(int argc, char *argv[])
     //!  P2P通信の確認(string版)
     std::string strout("This is send buffer");
     std::string strin;
-    if( MPIEnvPtr->GetMPIRank() == 0 )
+    if( MPICommPtr->GetMPIRank() == 0 )
     {
         MPICommPtr->Send( strout, 1 );
     }
-    else if( MPIEnvPtr->GetMPIRank() == 1 )
+    else if( MPICommPtr->GetMPIRank() == 1 )
     {
         MPICommPtr->Recv( strin, 0 );
         std::cout << strin << std::endl;
@@ -74,18 +75,18 @@ int main(int argc, char *argv[])
 
     //! 集団通信の確認(string)
     std::string strbcast;
-    if( MPIEnvPtr->IsRootRank() )
+    if( MPICommPtr->IsRootRank() )
     {
         strbcast = std::string( "This is from RootRank." );
     }
 
-    MPICommPtr->Bcast( strbcast, MPIEnvPtr->GetRootRank() );
+    MPICommPtr->Bcast( strbcast, MPICommPtr->GetRootRank() );
 
-    for( auto ii = 0; ii < MPIEnvPtr->GetMPISize(); ii++ )
+    for( auto ii = 0; ii < MPICommPtr->GetMPISize(); ii++ )
     {
-        if( MPIEnvPtr->GetMPIRank() == ii )
+        if( MPICommPtr->GetMPIRank() == ii )
         {
-            std::cout << "[BCAST TEST] Rank: " << MPIEnvPtr->GetMPIRank() << " => " << strbcast << std::endl;
+            std::cout << "[BCAST TEST] Rank: " << MPICommPtr->GetMPIRank() << " => " << strbcast << std::endl;
         }
         MPICommPtr->Barrier();
     }
@@ -94,7 +95,7 @@ int main(int argc, char *argv[])
     //! 集団通信の確認(string)--Gather ===================================================================================
     std::stringstream ssgather;
     ssgather << "Rank";
-    for( auto ii = 0; ii < MPIEnvPtr->GetMPIRank() + 1; ii++ )
+    for( auto ii = 0; ii < MPICommPtr->GetMPIRank() + 1; ii++ )
     {
         ssgather << ii;
     }
@@ -105,13 +106,13 @@ int main(int argc, char *argv[])
     std::string gathersend = ssgather.str();
     std::string gatherrecv;
 
-    MPICommPtr->Gather( gathersend, gatherrecv, MPIEnvPtr->GetRootRank() );
+    MPICommPtr->Gather( gathersend, gatherrecv, MPICommPtr->GetRootRank() );
 
-    for( auto ii = 0; ii < MPIEnvPtr->GetMPISize(); ii++ )
+    for( auto ii = 0; ii < MPICommPtr->GetMPISize(); ii++ )
     {
-        if( MPIEnvPtr->GetMPIRank() == ii )
+        if( MPICommPtr->GetMPIRank() == ii )
         {
-            std::cout << "[GATHER TEST] Rank: " << MPIEnvPtr->GetMPIRank() << " => " << gatherrecv << std::endl;
+            std::cout << "[GATHER TEST] Rank: " << MPICommPtr->GetMPIRank() << " => " << gatherrecv << std::endl;
         }
         MPICommPtr->Barrier();
     }
@@ -121,13 +122,13 @@ int main(int argc, char *argv[])
 
     std::string strscatter;
 
-    MPICommPtr->Scatter<std::string>( gatherrecv, strscatter, MPIEnvPtr->GetRootRank() );
+    MPICommPtr->Scatter<std::string>( gatherrecv, strscatter, MPICommPtr->GetRootRank() );
 
-    for( auto ii = 0; ii < MPIEnvPtr->GetMPISize(); ii++ )
+    for( auto ii = 0; ii < MPICommPtr->GetMPISize(); ii++ )
     {
-        if( MPIEnvPtr->GetMPIRank() == ii )
+        if( MPICommPtr->GetMPIRank() == ii )
         {
-            std::cout << "[SCATTER TEST] Rank: " << MPIEnvPtr->GetMPIRank() << " => " << strscatter << std::endl;
+            std::cout << "[SCATTER TEST] Rank: " << MPICommPtr->GetMPIRank() << " => " << strscatter << std::endl;
         }
         MPICommPtr->Barrier();
     }
@@ -135,8 +136,8 @@ int main(int argc, char *argv[])
 
     //! 集団通信の確認(string)--AllGather ================================================================================
     std::stringstream ssallgather;
-    ssallgather << "Rank" << MPIEnvPtr->GetMPIRank();
-    for( auto ii = 0; ii < MPIEnvPtr->GetMPIRank() + 1; ii++ )
+    ssallgather << "Rank" << MPICommPtr->GetMPIRank();
+    for( auto ii = 0; ii < MPICommPtr->GetMPIRank() + 1; ii++ )
     {
         ssallgather << ii;
     }
@@ -149,11 +150,11 @@ int main(int argc, char *argv[])
 
     MPICommPtr->AllGather<std::string>( allgathersend, allgatherrecv );
 
-    for( auto ii = 0; ii < MPIEnvPtr->GetMPISize(); ii++ )
+    for( auto ii = 0; ii < MPICommPtr->GetMPISize(); ii++ )
     {
-        if( MPIEnvPtr->GetMPIRank() == ii )
+        if( MPICommPtr->GetMPIRank() == ii )
         {
-            std::cout << "[AllGATHER TEST] Rank: " << MPIEnvPtr->GetMPIRank() << " => \n" << allgatherrecv  << " size: " << allgatherrecv.size() << std::endl;
+            std::cout << "[AllGATHER TEST] Rank: " << MPICommPtr->GetMPIRank() << " => \n" << allgatherrecv  << " size: " << allgatherrecv.size() << std::endl;
         }
         MPICommPtr->Barrier();
     }
@@ -165,11 +166,11 @@ int main(int argc, char *argv[])
 
     MPICommPtr->Alltoall<std::string>( allgatherrecv, stralltoall );
 
-    for( auto ii = 0; ii < MPIEnvPtr->GetMPISize(); ii++ )
+    for( auto ii = 0; ii < MPICommPtr->GetMPISize(); ii++ )
     {
-        if( MPIEnvPtr->GetMPIRank() == ii )
+        if( MPICommPtr->GetMPIRank() == ii )
         {
-            std::cout << "[ALLTOALL TEST] Rank: " << MPIEnvPtr->GetMPIRank() << " => " << stralltoall << std::endl;
+            std::cout << "[ALLTOALL TEST] Rank: " << MPICommPtr->GetMPIRank() << " => " << stralltoall << std::endl;
         }
         MPICommPtr->Barrier();
     }

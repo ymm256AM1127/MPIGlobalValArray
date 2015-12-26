@@ -56,7 +56,6 @@ HEADERS += \
     include/MPL/is_string.h \
     include/MPL/remove_modifier.h \
     include/MPL/meta_function.h \
-    include/MPI/detail/CommunicatorPodTraitImpl.h \
     include/MPI/detail/CommunicatorImpl.h \
     include/MPI/CommunicatorTraits.h \
     include/MPI/DataTypeDefine.h \
@@ -65,9 +64,13 @@ HEADERS += \
     include/MPI/PreDefinedDataType.h \
     include/MPI/PreDefinedOperationType.h \
     include/Utility/ScopedMutex.h \
-    include/MPI/detail/CommunicatorSTLContainerTraitImpl.h \
     include/MPI/PotinToPointCommPod.h \
     include/MPI/detail/PointToPointCommPodImpl.h \
     include/MPI/detail/PointToPointCommSTLContainerImpl.h \
-    include/MPI/PotinToPointCommSTLContainer.h
+    include/MPI/PotinToPointCommSTLContainer.h \
+    include/MPI/CollectiveCommPod.h \
+    include/MPI/CollectiveCommPod.h \
+    include/MPI/detail/CollectiveCommPodImpl.h \
+    include/MPI/detail/CollectiveCommSTLContainerImpl.h \
+    include/MPI/CollectiveCommSTLContainer.h
 

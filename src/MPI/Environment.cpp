@@ -13,14 +13,12 @@
 
 _MYNAMESPACE_::MPI::Environment::Environment()
 {
-    m_i32MPIRank                  = 0;
-    m_i32MPISize                  = 0;
     m_IsLocalNodeMaster           = false;
 }
 
 _MYNAMESPACE_::MPI::Environment::~Environment()
 {
-
+    this->Finalize();
 }
 
 /*!
@@ -44,8 +42,10 @@ void _MYNAMESPACE_::MPI::Environment::Init(int argc, char *argv[])
         Abort( NOTSUPPORTTHREADMULTIPLE );
     }
 #endif
-    MPI_Comm_rank( MPI_COMM_WORLD, &m_i32MPIRank );
-    MPI_Comm_size( MPI_COMM_WORLD, &m_i32MPISize );
+    int i32MPIRank = -1;
+    int i32MPISize = -1;
+    MPI_Comm_rank( MPI_COMM_WORLD, &i32MPIRank );
+    MPI_Comm_size( MPI_COMM_WORLD, &i32MPISize );
 
     //! ホスト名を取得
     std::vector<char> hostnametemp( _MPI_NAME_LENGH_, 0 );
@@ -76,25 +76,6 @@ void _MYNAMESPACE_::MPI::Environment::Abort(const int error_code)
     MPI_Abort( MPI_COMM_WORLD, error_code );
 }
 
-bool _MYNAMESPACE_::MPI::Environment::IsRootRank() const
-{
-    return ( m_i32MPIRank == 0 );
-}
-
-int _MYNAMESPACE_::MPI::Environment::GetRootRank() const
-{
-    return 0;
-}
-
-int _MYNAMESPACE_::MPI::Environment::GetMPIRank() const
-{
-    return m_i32MPIRank;
-}
-
-int _MYNAMESPACE_::MPI::Environment::GetMPISize() const
-{
-    return m_i32MPISize;
-}
 
 std::string _MYNAMESPACE_::MPI::Environment::GetHostName() const
 {
@@ -110,35 +91,6 @@ bool _MYNAMESPACE_::MPI::Environment::IsLocalNodeMaster() const
     return m_IsLocalNodeMaster;
 }
 
-bool _MYNAMESPACE_::MPI::Environment::IsRootRank(const MPI_Comm &comm) const
-{
-    return ( GetMPIRank( comm ) == 0 );
-}
-
-/*!
- * \brief _MYNAMESPACE_::MPI::Environment::GetMPIRank
- * \param comm
- * \return
- */
-int _MYNAMESPACE_::MPI::Environment::GetMPIRank(const MPI_Comm &comm) const
-{
-    int i32rank = 0;
-    MPI_Comm_rank( comm, &i32rank );
-    return i32rank;
-}
-
-/*!
- * \brief _MYNAMESPACE_::MPI::Environment::GetMPISize
- * \param comm
- * \return
- */
-int _MYNAMESPACE_::MPI::Environment::GetMPISize(const MPI_Comm &comm) const
-{
-    int i32size;
-    MPI_Comm_size( comm, &i32size );
-    return i32size;
-}
-
 /*!
  * \brief _MYNAMESPACE_::MPI::Environment::CreateGlobalNodeMap
  */
@@ -148,13 +100,16 @@ void _MYNAMESPACE_::MPI::Environment::CreateGlobalNodeMap()
     int  i32Resultlength = 0;
     MPI_Get_processor_name( hostnametemp.data(), &i32Resultlength );
 
+    int i32MPISize = -1;
+    MPI_Comm_size( MPI_COMM_WORLD, &i32MPISize );
+
     //! 総ランク数分の文字列バッファを用意し、allgatherで集めてくる。
-    std::vector<int> hostnamesizelist( GetMPISize() , 0 );
-    std::vector<char> hostnamelist( _MPI_NAME_LENGH_ * GetMPISize() , 0 );
+    std::vector<int> hostnamesizelist( i32MPISize , 0 );
+    std::vector<char> hostnamelist( _MPI_NAME_LENGH_ * i32MPISize , 0 );
     MPI_Allgather( &i32Resultlength, 1, MPI_INT, hostnamesizelist.data(), 1, MPI_INT, MPI_COMM_WORLD );
     MPI_Allgather( hostnametemp.data(), _MPI_NAME_LENGH_, MPI_CHAR, hostnamelist.data(), _MPI_NAME_LENGH_, MPI_CHAR, MPI_COMM_WORLD );
 
-    for( auto ii = 0; ii < GetMPISize(); ii++ )
+    for( auto ii = 0; ii < i32MPISize; ii++ )
     {
         std::string temp( &hostnamelist[ ii * _MPI_NAME_LENGH_ ], hostnamesizelist[ii] );
         temp.shrink_to_fit();
@@ -188,7 +143,9 @@ void _MYNAMESPACE_::MPI::Environment::CreateLocalNodeMap()
  */
 void _MYNAMESPACE_::MPI::Environment::CheckLocalNodeMaster()
 {
-    int minnumberofRank = GetMPIRank();
+    int i32MPIRank = -1;
+    MPI_Comm_size( MPI_COMM_WORLD, &i32MPIRank );
+    int minnumberofRank = i32MPIRank;
     for( auto iter : m_LocalMPIRankMap )
     {
         if( iter.first < minnumberofRank )
@@ -197,7 +154,7 @@ void _MYNAMESPACE_::MPI::Environment::CheckLocalNodeMaster()
         }
     }
 
-    if( minnumberofRank == GetMPIRank() )
+    if( minnumberofRank == i32MPIRank )
     {
         m_IsLocalNodeMaster = true;
     }

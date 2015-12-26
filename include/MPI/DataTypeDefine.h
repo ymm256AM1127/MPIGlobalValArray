@@ -6,6 +6,14 @@
 #include "../MPL/is_complex.h"
 #include "../MPL/is_pod.h"
 
+#define UNUSED_VARIABLE(x) (void)(x)
+#ifdef DEBUG_MPI
+    #include <QDebug>
+    #define _DEBUG_MPI_RET(a) qDebug() << (a)
+#else
+    #define _DEBUG_MPI_RET(a) a
+#endif
+
 namespace _MYNAMESPACE_
 {
     namespace MPI

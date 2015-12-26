@@ -4,11 +4,67 @@
 #include "../Communicator.h"
 #include "../PotinToPointCommPod.h"
 #include "../PotinToPointCommSTLContainer.h"
+#include "../CollectiveCommPod.h"
+#include "../CollectiveCommSTLContainer.h"
 
 namespace _MYNAMESPACE_
 {
     namespace MPI
     {
+        bool Communicator::IsRootRank() const
+        {
+            return ( m_i32MPIRank == 0 );
+        }
+
+        int Communicator::GetRootRank() const
+        {
+            return 0;
+        }
+
+        int Communicator::GetMPIRank() const
+        {
+            return m_i32MPIRank;
+        }
+
+        int Communicator::GetMPISize() const
+        {
+            return m_i32MPISize;
+        }
+
+        int Communicator::GetTag() const
+        {
+            return m_i32Tag;
+        }
+
+        MPI_Comm Communicator::GetCommunicator()
+        {
+            return m_Commnunicator;
+        }
+
+        std::vector<MPI_Request> &Communicator::MPI_Requests()
+        {
+            return m_vectMPI_Requests;
+        }
+
+        std::mutex &Communicator::Mutex()
+        {
+            return m_Mutex;
+        }
+
+        std::vector<std::thread> &Communicator::ThreadPool()
+        {
+            return m_vectThreadPool;
+        }
+
+        /*!
+         * \brief MPI::Communicator::Barrier
+         */
+        void Communicator::Barrier() const
+        {
+            MPI_Barrier( m_Commnunicator );
+        }
+
+
         template< class T >
         /*!
          * \brief Send
@@ -72,7 +128,7 @@ namespace _MYNAMESPACE_
          */
         int Communicator::Bcast( T &dataBufer, const int srcRank, const int itemCount )
         {
-            return _Bcast_< T >( typename comm_trais<T>::tag(), dataBufer, srcRank, itemCount );
+            return _Bcast_< T >( typename comm_trais<T>::tag(), dataBufer, srcRank, this, itemCount );
         }
 
         template< class T >
@@ -86,7 +142,7 @@ namespace _MYNAMESPACE_
          */
         int Communicator::Gather( const T &SendBuffer, T &RecvBuffer, const int rootRank, const int itemCount )
         {
-            return _Gather_< T >( typename comm_trais<T>::tag(), SendBuffer, RecvBuffer, rootRank, itemCount );
+            return _Gather_< T >( typename comm_trais<T>::tag(), SendBuffer, RecvBuffer, rootRank, this, itemCount );
         }
 
 
@@ -101,7 +157,7 @@ namespace _MYNAMESPACE_
          */
         int Communicator::Scatter( const T &SendBuffer, T &RecvBuffer, const int rootRank, const int itemCount )
         {
-            return _Scatter_< T >( typename comm_trais<T>::tag(), SendBuffer, RecvBuffer, rootRank, itemCount );
+            return _Scatter_< T >( typename comm_trais<T>::tag(), SendBuffer, RecvBuffer, rootRank, this, itemCount );
         }
 
         template< class T >
@@ -114,7 +170,7 @@ namespace _MYNAMESPACE_
          */
         int Communicator::AllGather( const T &SendBuffer, T &RecvBuffer, const int itemCount )
         {
-            return _AllGather_< T >( typename comm_trais<T>::tag(), SendBuffer, RecvBuffer, itemCount );
+            return _AllGather_< T >( typename comm_trais<T>::tag(), SendBuffer, RecvBuffer, this, itemCount );
         }
 
         template< class T >
@@ -128,7 +184,7 @@ namespace _MYNAMESPACE_
         int Communicator::Alltoall( const T &SendBuffer,
                                     T &RecvBuffer, const int itemCount )
         {
-            return _Alltoall_< T >( typename comm_trais<T>::tag(), SendBuffer, RecvBuffer, itemCount );
+            return _Alltoall_< T >( typename comm_trais<T>::tag(), SendBuffer, RecvBuffer, this, itemCount );
         }
 
         template<int OP,  class T  >
@@ -144,7 +200,7 @@ namespace _MYNAMESPACE_
                                   typename reducible_type<T>::type &RecvBuffer, const int rootRank, const int itemCount )
         {
             return _Reduce_< T >( typename comm_trais<T>::tag(), MPIOpType< T, OP >(),
-                             SendBuffer, RecvBuffer, rootRank, itemCount );
+                             SendBuffer, RecvBuffer, rootRank, this, itemCount );
         }
 
         template<int OP,  class T  >
@@ -158,12 +214,12 @@ namespace _MYNAMESPACE_
         int Communicator::Allreduce( const typename reducible_type<T>::type &SendBuffer,
                                      typename reducible_type<T>::type &RecvBuffer, const int itemCount )
         {
-            return _Allreduce_<T>( typename comm_trais<T>::tag(), MPIOpType<T,OP>(), SendBuffer, RecvBuffer, itemCount );
+            return _Allreduce_<T>( typename comm_trais<T>::tag(), MPIOpType<T,OP>(), SendBuffer, RecvBuffer, this, itemCount );
         }
     }
 }
 #endif // COMMUNICATORIMPL_H
 
-#include "CommunicatorPodTraitImpl.h"
-#include "CommunicatorSTLContainerTraitImpl.h"
+//#include "CommunicatorPodTraitImpl.h"
+//#include "CommunicatorSTLContainerTraitImpl.h"
 

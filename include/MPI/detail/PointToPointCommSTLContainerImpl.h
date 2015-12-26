@@ -8,6 +8,7 @@
 #include "../PreDefinedDataType.h"
 #include "../PreDefinedOperationType.h"
 #include "../../Utility/ScopedMutex.h"
+#include "../ErrorCode.h"
 
 #include <iostream>
 
@@ -84,7 +85,7 @@ namespace _MYNAMESPACE_
             {
                 _Send_<T>( std_container_traits_tag(), dataSend, dest, i32Tag, comm, count );
             };
-            comm->ThreadPool().push_back(  std::thread( func ) );
+            comm->ThreadPool().push_back( std::thread( func ) );
 
             return retival;
         }
