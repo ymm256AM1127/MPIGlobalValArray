@@ -16,7 +16,9 @@ namespace _MYNAMESPACE_
             GATHERSIZEERROR          = -5,
             SCCATERSIZEERROR         = -6,
             ALLTOALLSIZEERROR        = -7,
-            CANNOTCREATEWINDOW       = -8
+            CANNOTCREATEWINDOW       = -8,
+            CANNOTREGISTWINTOCOMM    = -9,
+            CANNOTERASEWINFEOMCOMM   = -10
         } ERROR_CODE;
     }
 }

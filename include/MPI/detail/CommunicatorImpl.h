@@ -11,6 +11,14 @@ namespace _MYNAMESPACE_
 {
     namespace MPI
     {
+        /*!
+         * \brief MPI::Communicator::Barrier
+         */
+        void Communicator::Barrier() const
+        {
+            MPI_Barrier( m_Commnunicator );
+        }
+
         bool Communicator::IsRootRank() const
         {
             return ( m_i32MPIRank == 0 );
@@ -55,16 +63,6 @@ namespace _MYNAMESPACE_
         {
             return m_vectThreadPool;
         }
-
-        /*!
-         * \brief MPI::Communicator::Barrier
-         */
-        void Communicator::Barrier() const
-        {
-            MPI_Barrier( m_Commnunicator );
-        }
-
-
         template< class T >
         /*!
          * \brief Send

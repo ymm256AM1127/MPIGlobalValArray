@@ -6,11 +6,14 @@
 
 #include <string>
 #include <vector>
-#include <unordered_map>
+#include <set>
 #include <mpi.h>
 #include "CommunicatorTraits.h"
 #include <mutex>
 #include <thread>
+#include <functional>
+#include "Environment.h"
+//#include "WindowObject.h"
 
 namespace _MYNAMESPACE_
 {
@@ -20,11 +23,9 @@ namespace _MYNAMESPACE_
         class  SHAREDLIBRARYDEFINE_EXPORT Communicator
         {
         public:
-            Communicator();
-            Communicator( const MPI_Comm comm, const int tag );
+            explicit Communicator( const MPI_Comm comm );
             ~Communicator();
 
-            void                                SetCommunicator( const MPI_Comm& comm );
             void                                SetTag( const int tag );
             void                                WaitAll();
 
@@ -69,6 +70,13 @@ namespace _MYNAMESPACE_
                                                        typename reducible_type<T>::type &RecvBuffer,
                                                        const int itemCount = 0 );
 
+            using WinObsSetType = std::set< std::function< void() >* >;
+
+
+
+            int                         RegisterWinObjSet( const std::function<void()>* pfunc );
+            int                         EraseWinObjSet( const std::function<void()>* pfunc );
+
         private:
             int                         m_i32Tag;
             MPI_Comm                    m_Commnunicator;
@@ -77,16 +85,11 @@ namespace _MYNAMESPACE_
             std::vector<std::thread>    m_vectThreadPool;
             int                         m_i32MPIRank;
             int                         m_i32MPISize;
+            WinObsSetType               m_WindowObjSet;
         };
-
-
-
-        typedef SingletonHolder< Communicator >  CommunicatorSingleton;
     }
 }
 #endif // COMMUNICATOR_H
 
 #include "detail/CommunicatorImpl.h"
-
-#define MPICommPtr _MYNAMESPACE_::MPI::CommunicatorSingleton::GetInstance()
 
