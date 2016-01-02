@@ -76,5 +76,6 @@ HEADERS += \
     include/MPL/ZeroValue.h \
     include/MPI/WindowObject.h \
     include/MPI/detail/WindowObjectImpl.h \
-    include/MPI/WindowObjAllocator.h
+    include/MPI/WindowObjAllocator.h \
+    include/MPI/detail/WindowObjAllocatorImpl.h
 

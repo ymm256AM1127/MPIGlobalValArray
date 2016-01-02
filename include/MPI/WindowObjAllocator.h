@@ -73,56 +73,13 @@ namespace _MYNAMESPACE_
                                  Environment::CommPtr comm,
                                  const size_t globalsize,
                                  const size_t localhalosize,
-                                 const std::string&  windowobjectname )
-            {
-                auto Globalsize       = globalsize;
-                auto Localhalosize    = localhalosize;
-                int MPISize             = -1;
+                                 const std::string&  windowobjectname );
 
-                MPI_Comm_size( comm->GetCommunicator(), &MPISize );
-
-                auto MPISize64 = static_cast< size_t >(MPISize);
-
-                auto rest = ( ( Globalsize % MPISize64 ) == 0 ) ? 0 : MPISize64 - ( Globalsize % MPISize64 ) ;
-                Globalsize += rest;
-                size_t LocalSize = Globalsize / MPISize64 + Localhalosize;
-
-                auto ret = MPI_Win_allocate( LocalSize * sizeof( T ),
-                                             sizeof( T ),
-                                             MPI_INFO_NULL,
-                                             comm->GetCommunicator(),
-                                             &baseptr,
-                                             &win );
-
-                if( MPI_SUCCESS != ret )
-                {
-                    //! エラーを書く
-                }
-
-                MPI_Win_set_name( win, windowobjectname.c_str() );
-
-                return ret;
-
-            }
-
-            int DeleteWindowObj( MPI_Win &win )
-            {
-                int flag = 0;
-                int *flaver = nullptr;
-                int ret = MPI_SUCCESS;
-                MPI_Win_get_attr( win, MPI_WIN_CREATE_FLAVOR, &flaver, &flag );
-                if( *flaver == MPI_WIN_FLAVOR_ALLOCATE )
-                {
-                    value_type* baseptr = nullptr;
-                    MPI_Win_get_attr( win, MPI_WIN_BASE, &baseptr, &flag );
-//                    ret = MPI_Free_mem( baseptr );
-                }
-                MPI_Win_free( &win );
-                win = MPI_WIN_NULL;
-                return ret;
-            }
+            int DeleteWindowObj( MPI_Win &win );
         };
     }
 }
 
 #endif // WINDOWOBJALLOCATOR_H
+
+#include "./detail/WindowObjAllocatorImpl.h"

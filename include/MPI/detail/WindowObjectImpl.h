@@ -39,7 +39,6 @@ namespace _MYNAMESPACE_
             //! Window削除用ラムダを記述（thisをキャプチャさせておく）
             Deletor = [this]()
             {
-                qDebug() << "Call Deletor from " << m_Communicator->GetMPIRank();
                 if( m_WindowObj != MPI_WIN_NULL )
                 {
                     m_Allocator.DeleteWindowObj( m_WindowObj );
