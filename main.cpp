@@ -204,17 +204,22 @@ int main(int argc, char *argv[])
     _MYNAMESPACE_::MPI::WindowObject<int> rmaobj1( comm, 10000, 0, "test1" );
     _MYNAMESPACE_::MPI::WindowObject<float> rmaobj2( comm, 10000, 0, "test1" );
     comm->Barrier();
+
+    double val;
+    val = 0.09;
 //    qDebug() << rmaobj.GetWindowObjName().c_str();
 
 //    if( comm->GetMPIRank() == 0 )
 //    {
-        rmaobj.Write( 333.333, 50 );
-        rmaobj2.Write( 454.090, 9000 );
-        rmaobj.Write( 555.555, 8000 );
+//        rmaobj.Write( 333.333, 50 );
+//        rmaobj2.Write( 454.090, 9000 );
+//        rmaobj.Write( 555.555, 8000 );
+
+        rmaobj[50] = 0.7777;
 //    }
     comm->Barrier();
 
-    qDebug() <<  rmaobj.Read( 50 ) << rmaobj.Read( 8000 );
+    qDebug() <<  rmaobj[50] << rmaobj[ 8000 ]/* << MPIEnvPtr->GetHostName().c_str()*/;
 }
 //MPI_Barrier( MPI_COMM_WORLD );
 

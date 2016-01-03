@@ -26,7 +26,8 @@ namespace _MYNAMESPACE_
             : m_WindowObj( MPI_WIN_NULL ),
               m_Communicator( comm ),
               m_GlobalSize( size ),
-              m_LocalHaloSize( localhalosize )
+              m_LocalHaloSize( localhalosize ),
+              m_CurrentIndex( 0 )
         {
             //! ここにアロケータを書く
             m_Allocator.CreateWindowObj( m_BasePtr,
@@ -67,7 +68,7 @@ namespace _MYNAMESPACE_
          * \brief WindowObject<T, Allocator>::GetBasePtr
          * \return
          */
-        T *WindowObject<T, Allocator>::GetBasePtr() const
+        typename WindowObject<T, Allocator>::pointer WindowObject<T, Allocator>::GetBasePtr() const
         {
             return m_BasePtr;
         }
@@ -145,19 +146,19 @@ namespace _MYNAMESPACE_
         }
 
         template < class T, class Allocator >
-        void WindowObject<T, Allocator>::LockShared( const int rank )
+        void WindowObject<T, Allocator>::LockShared( const int rank ) const
         {
             MPI_Win_lock( MPI_LOCK_SHARED, rank, MPI_WIN_DEFAULT_ASSERTION , m_WindowObj );
         }
 
         template < class T, class Allocator >
-        void WindowObject<T, Allocator>::LockExclusive( const int rank )
+        void WindowObject<T, Allocator>::LockExclusive( const int rank ) const
         {
             MPI_Win_lock( MPI_LOCK_EXCLUSIVE, rank, MPI_WIN_DEFAULT_ASSERTION , m_WindowObj );
         }
 
         template < class T, class Allocator >
-        void WindowObject<T, Allocator>::Unlock(const int rank)
+        void WindowObject<T, Allocator>::Unlock(const int rank) const
         {
             MPI_Win_unlock( rank, m_WindowObj );
         }
@@ -184,7 +185,7 @@ namespace _MYNAMESPACE_
         void WindowObject<T, Allocator>::Get( value_type* baseptr,
                                 const std::size_t offsetfrombasept,
                                 const std::size_t count,
-                                const int targetRank )
+                                const int targetRank ) const
         {
             this->LockShared( targetRank );
             MPI_Get( baseptr,
@@ -199,7 +200,7 @@ namespace _MYNAMESPACE_
         }
 
         template < class T, class Allocator >
-        T WindowObject<T, Allocator>::Read(const std::size_t index)
+        typename WindowObject<T, Allocator>::value_type WindowObject<T, Allocator>::Read(const std::size_t index) const
         {
             std::size_t iTargetRank = index / m_LocalSize;
             std::size_t iOffset     = index % m_LocalSize ;
@@ -228,7 +229,7 @@ namespace _MYNAMESPACE_
 //        }
 
         template < class T, class Allocator >
-        void WindowObject<T, Allocator>::Write(const T &value, const std::size_t index)
+        void WindowObject<T, Allocator>::Write(const WindowObject<T, Allocator>::value_type &value, const std::size_t index)
         {
             std::size_t iTargetRank = index / m_LocalSize;
             std::size_t iOffset     = index % m_LocalSize;

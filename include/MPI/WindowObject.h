@@ -16,11 +16,17 @@ namespace _MYNAMESPACE_
 {
     namespace MPI
     {
+        template < class T > struct Base
+        {
+            T data;
+        };
+
         template < class T, class Allocator = WinAllocate<T> >
-        class WindowObject
+        class WindowObject : protected Base<T>
         {
         public:
             using value_type     = typename std::enable_if< MPL::is_pod< T >::value, T >::type;
+            using pointer        = value_type*;
             using CommPtr        = Environment::CommPtr;
             using allocator_type = Allocator;
 
@@ -30,27 +36,74 @@ namespace _MYNAMESPACE_
                                    const std::string&  windowobjectname = std::string() );
             ~WindowObject();
 
+            WindowObject& operator=( const value_type& val )
+            {
+                Write( val, m_CurrentIndex );
+                return *this;
+            }
+
             std::function< void() >     Deletor;
 
             //! Passive Target ======================================================================
-            void            LockShared  ( const int rank );
-            void            LockExclusive  ( const int rank );
-            void            Unlock( const int rank );
+            void            LockShared  ( const int rank ) const ;
+            void            LockExclusive  ( const int rank ) const;
+            void            Unlock( const int rank ) const;
             //! ====================================================================== Passive Target
 
             //! Basic Operation =====================================================================
-            T               Read ( const std::size_t index );
-            void            Write( const T& value, const std::size_t index );
+            value_type      Read ( const std::size_t index ) const;
+            void            Write( const value_type& value, const std::size_t index );
             void            Read ( T* baseptr,
                                    const std::size_t startindex,
                                    const std::size_t count );
             void            Write( const T* baseptr,
                                    const std::size_t startindex,
                                    const std::size_t count );
+
+            /*!
+             * \brief at
+             * \param index
+             * \return
+             */
+            const value_type at( const std::size_t index ) const
+            {
+                return Read( index );
+            }
+
+            /*!
+             * \brief operator T
+             */
+            operator T () const
+            {
+                return Read( m_CurrentIndex );
+            }
+
+            /*!
+             * \brief operator []
+             * \param index
+             * \return
+             */
+            const WindowObject& operator[]( const std::size_t index ) const
+            {
+                this->data = Read( index );
+                return *this;
+            }
+
+            /*!
+             * \brief operator []
+             * \param index
+             * \return
+             */
+            WindowObject& operator []( const std::size_t index )
+            {
+                m_CurrentIndex = index;
+                return *this;
+            }
+
             //! ===================================================================== Basic Operation
 
             //! Getter Property =====================================================================
-            T*              GetBasePtr() const;
+            pointer         GetBasePtr() const;
             std::size_t     GetGlobalSize() const;
             std::size_t     GetLocalSize() const;
             std::size_t     GetLocalHaloSize() const;
@@ -75,6 +128,8 @@ namespace _MYNAMESPACE_
             std::size_t             m_LocalCapacity;
             std::size_t             m_LocalHaloSize;
 
+            std::size_t             m_CurrentIndex;
+
             inline void     Put( const value_type* baseptr,
                                  const std::size_t offsetfrombaseptr,
                                  const std::size_t count,
@@ -82,7 +137,9 @@ namespace _MYNAMESPACE_
             inline void     Get( value_type* baseptr,
                                  const std::size_t offsetfrombaseptr,
                                  const std::size_t count,
-                                 const int targetRank );
+                                 const int targetRank ) const;
+
+            void operator &() const{}
 
         };
 
