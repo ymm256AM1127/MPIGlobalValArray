@@ -228,10 +228,22 @@ namespace _MYNAMESPACE_
         }
 
         template < class T, class Allocator >
+        void WindowObject<T, Allocator>::LockAll( ) const
+        {
+            MPI_Win_lock_all( MPI_WIN_DEFAULT_ASSERTION , m_WindowObj );
+        }
+
+        template < class T, class Allocator >
+        void WindowObject<T, Allocator>::UnlockAll( ) const
+        {
+            MPI_Win_unlock_all(  m_WindowObj );
+        }
+
+        template < class T, class Allocator >
         void WindowObject<T, Allocator>::Put( const value_type* baseptr,
                                               const std::size_t offsetfrombasept,
                                               const std::size_t count,
-                                              const int targetRank )
+                                              const int targetRank ) const
         {
             this->LockExclusive( targetRank );
             MPI_Put( baseptr,
@@ -261,6 +273,12 @@ namespace _MYNAMESPACE_
                      MPIDATATYPE<T>(),
                      m_WindowObj );
             this->Unlock( targetRank );
+        }
+
+        template < class T, class Allocator >
+        void WindowObject<T, Allocator>::Fence() const
+        {
+            MPI_Win_fence( MPI_WIN_DEFAULT_ASSERTION, m_WindowObj );
         }
 
         template < class T, class Allocator >

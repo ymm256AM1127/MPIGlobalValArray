@@ -48,7 +48,13 @@ namespace _MYNAMESPACE_
             void            LockShared  ( const int rank ) const ;
             void            LockExclusive  ( const int rank ) const;
             void            Unlock( const int rank ) const;
+            void            LockAll() const;
+            void            UnlockAll() const;
             //! ====================================================================== Passive Target
+
+            //! Acctive Target =-=====================================================================
+            void            Fence  () const ;
+            //! ======================================================================= Acctive Target
 
             //! Basic Operation =====================================================================
             value_type      Read ( const std::size_t index ) const;
@@ -96,19 +102,19 @@ namespace _MYNAMESPACE_
             inline void     Put( const value_type* baseptr,
                                  const std::size_t offsetfrombaseptr,
                                  const std::size_t count,
-                                 const int targetRank );
+                                 const int targetRank ) const;
             inline void     Get( value_type* baseptr,
                                  const std::size_t offsetfrombaseptr,
                                  const std::size_t count,
                                  const int targetRank ) const;
 
             //! アドレスを取得できないようにする。
-            void operator &() const{}
+            void            operator &() const{}
 
-            void CreateObject( CommPtr comm,
-                               const std::size_t size,
-                               const std::size_t localhalosize,
-                               const std::string&  windowobjectname = std::string() );
+            void            CreateObject( CommPtr comm,
+                                          const std::size_t size,
+                                          const std::size_t localhalosize,
+                                          const std::string&  windowobjectname = std::string() );
 
         };
     }
