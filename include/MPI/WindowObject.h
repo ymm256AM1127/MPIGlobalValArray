@@ -39,8 +39,8 @@ namespace _MYNAMESPACE_
 
             ~WindowObject();
 
-            WindowObject& operator=( const WindowObject& rhs );
-            WindowObject& operator=( const value_type& val );
+            WindowObject&   operator=( const WindowObject& rhs );
+            WindowObject&   operator=( const value_type& val );
 
             std::function< void() >     Deletor;
 
@@ -62,7 +62,7 @@ namespace _MYNAMESPACE_
             const value_type at( const std::size_t index ) const;
             operator T () const;
             const WindowObject& operator[]( const std::size_t index ) const;
-            WindowObject& operator []( const std::size_t index );
+            WindowObject&   operator []( const std::size_t index );
             //! ===================================================================== Basic Operation
 
             //! Getter Property =====================================================================

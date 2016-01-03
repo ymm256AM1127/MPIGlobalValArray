@@ -86,7 +86,8 @@ namespace _MYNAMESPACE_
             MPI_Aint* win_size = nullptr;
             int  flag = 0;
             MPI_Win_get_attr( m_WindowObj, MPI_WIN_SIZE, &win_size, &flag );
-            m_LocalSize =  static_cast< std::size_t >(*win_size);
+            m_LocalCapacity = static_cast< std::size_t >(*win_size) / sizeof( value_type );
+            m_LocalSize     = m_LocalCapacity - m_LocalHaloSize;
         }
 
         template < class T, class Allocator >
@@ -228,9 +229,9 @@ namespace _MYNAMESPACE_
 
         template < class T, class Allocator >
         void WindowObject<T, Allocator>::Put( const value_type* baseptr,
-                                const std::size_t offsetfrombasept,
-                                const std::size_t count,
-                                const int targetRank )
+                                              const std::size_t offsetfrombasept,
+                                              const std::size_t count,
+                                              const int targetRank )
         {
             this->LockExclusive( targetRank );
             MPI_Put( baseptr,
@@ -246,9 +247,9 @@ namespace _MYNAMESPACE_
 
         template < class T, class Allocator >
         void WindowObject<T, Allocator>::Get( value_type* baseptr,
-                                const std::size_t offsetfrombasept,
-                                const std::size_t count,
-                                const int targetRank ) const
+                                              const std::size_t offsetfrombasept,
+                                              const std::size_t count,
+                                              const int targetRank ) const
         {
             this->LockShared( targetRank );
             MPI_Get( baseptr,
@@ -263,6 +264,11 @@ namespace _MYNAMESPACE_
         }
 
         template < class T, class Allocator >
+        /*!
+         * \brief WindowObject<T, Allocator>::Read
+         * \param index
+         * \return
+         */
         typename WindowObject<T, Allocator>::value_type WindowObject<T, Allocator>::Read(const std::size_t index) const
         {
             std::size_t iTargetRank = index / m_LocalSize;
@@ -281,14 +287,26 @@ namespace _MYNAMESPACE_
         }
 
         template < class T, class Allocator >
+        /*!
+         * \brief WindowObject<T, Allocator>::operator T
+         */
         WindowObject<T, Allocator>::operator T() const
         {
             return Read( m_CurrentIndex );
         }
 
         template < class T, class Allocator >
+        /*!
+         * \brief WindowObject<T, Allocator>::at
+         * \param index
+         * \return
+         */
         const typename WindowObject<T, Allocator>::value_type WindowObject<T, Allocator>::at(const std::size_t index) const
         {
+            if( index >= m_GlobalSize )
+            {
+                throw std::out_of_range("Window object out of range.");
+            }
             return Read( index );
         }
 

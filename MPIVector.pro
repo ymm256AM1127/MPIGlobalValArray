@@ -8,11 +8,15 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    MPIWapperUtils.cpp \
     src/MPI/Environment.cpp \
     src/MPI/Communicator.cpp \
     src/MPI/CustomDataType.cpp \
-    src/MPI/CustomOperationType.cpp
+    src/MPI/CustomOperationType.cpp \
+    test/P2PTest.cpp \
+    test/BcastTest.cpp \
+    test/CollectiveTest.cpp \
+    test/CorrectiveAllTest.cpp \
+    test/WindowObjectTest.cpp
 
 
 win32{
@@ -42,9 +46,6 @@ INCLUDEPATH += $$MPIINC
 DEPENDPATH  += $$MPIINC
 
 HEADERS += \
-    MPISharedAllocator.h \
-    MPIWapperUtils.h \
-    MPISharedVector.h \
     include/SharedLibraryDefine.h \
     include/MPI/Environment.h \
     include/Utility/SingletonHolder.h \
@@ -77,5 +78,6 @@ HEADERS += \
     include/MPI/WindowObject.h \
     include/MPI/detail/WindowObjectImpl.h \
     include/MPI/WindowObjAllocator.h \
-    include/MPI/detail/WindowObjAllocatorImpl.h
+    include/MPI/detail/WindowObjAllocatorImpl.h \
+    test/Test.h
 

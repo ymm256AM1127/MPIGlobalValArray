@@ -114,6 +114,10 @@ namespace _MYNAMESPACE_
         {
             std::shared_ptr<Communicator> temp( new Communicator( comm ) );
             auto error = m_CommAllocSet.insert( temp );
+            if( !error.second )
+            {
+                throw std::domain_error( " Cannnot Create Communicator." );
+            }
             return temp;
         }
 
