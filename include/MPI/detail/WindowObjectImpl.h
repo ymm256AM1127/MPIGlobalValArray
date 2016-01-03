@@ -29,6 +29,41 @@ namespace _MYNAMESPACE_
               m_LocalHaloSize( localhalosize ),
               m_CurrentIndex( 0 )
         {
+            CreateObject( comm, size, localhalosize, windowobjectname );
+        }
+
+        template < class T, class Allocator >
+        /*!
+         * \brief WindowObject::WindowObject
+         * \param rhs
+         */
+        WindowObject<T, Allocator>::WindowObject(const WindowObject &rhs)
+        {
+            *this = rhs;
+        }
+
+        template < class T, class Allocator >
+        /*!
+         * \brief WindowObject<T, Allocator>::~WindowObject
+         */
+        WindowObject<T, Allocator>::~WindowObject()
+        {
+            m_Communicator->EraseWinObjSet( &Deletor );
+        }
+
+        template < class T, class Allocator >
+        /*!
+         * \brief WindowObject<T, Allocator>::CreateObject
+         * \param comm
+         * \param size
+         * \param localhalosize
+         * \param windowobjectname
+         */
+        void WindowObject<T, Allocator>::CreateObject( CommPtr comm,
+                                                       const std::size_t size,
+                                                       const std::size_t localhalosize,
+                                                       const std::string &windowobjectname)
+        {
             //! ここにアロケータを書く
             m_Allocator.CreateWindowObj( m_BasePtr,
                                          m_WindowObj,
@@ -56,11 +91,39 @@ namespace _MYNAMESPACE_
 
         template < class T, class Allocator >
         /*!
-         * \brief WindowObject<T, Allocator>::~WindowObject
+         * \brief WindowObject<T, Allocator>::operator =
+         * \param val
+         * \return
          */
-        WindowObject<T, Allocator>::~WindowObject()
+        WindowObject<T, Allocator> &WindowObject<T, Allocator>::operator=(const typename WindowObject<T, Allocator>::value_type &val)
         {
-            m_Communicator->EraseWinObjSet( &Deletor );
+            Write( val, m_CurrentIndex );
+            return *this;
+        }
+
+        template < class T, class Allocator >
+        /*!
+         * \brief WindowObject<T, Allocator>::operator =
+         * \param rhs
+         * \return
+         */
+        WindowObject<T, Allocator> &WindowObject<T, Allocator>::operator=(const WindowObject<T, Allocator> &rhs)
+        {
+            if( m_WindowObj != MPI_WIN_NULL )
+            {
+                m_Communicator->EraseWinObjSet( &Deletor );
+            }
+            m_Communicator          = rhs.m_Communicator;
+            m_GlobalSize            = rhs.m_GlobalSize;
+            m_LocalHaloSize         = rhs.m_LocalHaloSize;
+            m_CurrentIndex          = 0;
+
+            CreateObject( m_Communicator, m_GlobalSize, m_LocalHaloSize );
+
+            //! このオペレータが呼ばれるときは集団通信が前提なので、ローカルでコピーするだけで良い。
+            memcpy( m_BasePtr, rhs.m_BasePtr, ( m_LocalSize + m_LocalHaloSize ) * sizeof( value_type )  );
+
+            return *this;
         }
 
         template < class T, class Allocator >
@@ -205,7 +268,7 @@ namespace _MYNAMESPACE_
             std::size_t iTargetRank = index / m_LocalSize;
             std::size_t iOffset     = index % m_LocalSize ;
 
-            if( iTargetRank != m_Communicator->GetMPIRank() )
+            if( iTargetRank != static_cast<std::size_t>( m_Communicator->GetMPIRank() ) )
             {
                 auto val = MPL::ZeroType<T>();
                 this->Get( &val, iOffset, 1, iTargetRank );
@@ -217,16 +280,31 @@ namespace _MYNAMESPACE_
             }
         }
 
-//        template < class T, class Allocator >
-//        /*!
-//         * \brief WindowObject<T, Allocator>::operator []
-//         * \param index
-//         * \return
-//         */
-//        T WindowObject<T, Allocator>::operator[](const std::size_t index) const
-//        {
-//            return this->Read( index );
-//        }
+        template < class T, class Allocator >
+        WindowObject<T, Allocator>::operator T() const
+        {
+            return Read( m_CurrentIndex );
+        }
+
+        template < class T, class Allocator >
+        const typename WindowObject<T, Allocator>::value_type WindowObject<T, Allocator>::at(const std::size_t index) const
+        {
+            return Read( index );
+        }
+
+        template < class T, class Allocator >
+        const WindowObject<T, Allocator> &WindowObject<T, Allocator>::operator[](const std::size_t index) const
+        {
+            m_CurrentIndex = index;
+            return *this;
+        }
+
+        template < class T, class Allocator >
+        WindowObject<T, Allocator> &WindowObject<T, Allocator>::operator [](const std::size_t index)
+        {
+            m_CurrentIndex = index;
+            return *this;
+        }
 
         template < class T, class Allocator >
         void WindowObject<T, Allocator>::Write(const WindowObject<T, Allocator>::value_type &value, const std::size_t index)
@@ -234,7 +312,7 @@ namespace _MYNAMESPACE_
             std::size_t iTargetRank = index / m_LocalSize;
             std::size_t iOffset     = index % m_LocalSize;
 
-            if( iTargetRank != m_Communicator->GetMPIRank() )
+            if( iTargetRank != static_cast<std::size_t>( m_Communicator->GetMPIRank() ) )
             {
                 this->Put( &value, iOffset, 1, iTargetRank );
             }

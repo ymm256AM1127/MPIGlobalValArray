@@ -49,9 +49,7 @@ namespace _MYNAMESPACE_
         template < class T >
         int WinAllocate<T>::DeleteWindowObj(MPI_Win &win)
         {
-            int flag = 0;
             int ret = MPI_SUCCESS;
-
             //! たいていのMPIの実装ではWindowオブジェクトが開放されれば、
             //! 自分が確保したメモリも開放しているので、ベースポインタを自
             //! 前で開放する必要はない。

@@ -34,13 +34,13 @@ namespace _MYNAMESPACE_
                                    const std::size_t size,
                                    const std::size_t localhalosize = 0,
                                    const std::string&  windowobjectname = std::string() );
+
+            WindowObject( const WindowObject& rhs );
+
             ~WindowObject();
 
-            WindowObject& operator=( const value_type& val )
-            {
-                Write( val, m_CurrentIndex );
-                return *this;
-            }
+            WindowObject& operator=( const WindowObject& rhs );
+            WindowObject& operator=( const value_type& val );
 
             std::function< void() >     Deletor;
 
@@ -59,47 +59,10 @@ namespace _MYNAMESPACE_
             void            Write( const T* baseptr,
                                    const std::size_t startindex,
                                    const std::size_t count );
-
-            /*!
-             * \brief at
-             * \param index
-             * \return
-             */
-            const value_type at( const std::size_t index ) const
-            {
-                return Read( index );
-            }
-
-            /*!
-             * \brief operator T
-             */
-            operator T () const
-            {
-                return Read( m_CurrentIndex );
-            }
-
-            /*!
-             * \brief operator []
-             * \param index
-             * \return
-             */
-            const WindowObject& operator[]( const std::size_t index ) const
-            {
-                this->data = Read( index );
-                return *this;
-            }
-
-            /*!
-             * \brief operator []
-             * \param index
-             * \return
-             */
-            WindowObject& operator []( const std::size_t index )
-            {
-                m_CurrentIndex = index;
-                return *this;
-            }
-
+            const value_type at( const std::size_t index ) const;
+            operator T () const;
+            const WindowObject& operator[]( const std::size_t index ) const;
+            WindowObject& operator []( const std::size_t index );
             //! ===================================================================== Basic Operation
 
             //! Getter Property =====================================================================
@@ -139,11 +102,15 @@ namespace _MYNAMESPACE_
                                  const std::size_t count,
                                  const int targetRank ) const;
 
+            //! アドレスを取得できないようにする。
             void operator &() const{}
 
+            void CreateObject( CommPtr comm,
+                               const std::size_t size,
+                               const std::size_t localhalosize,
+                               const std::string&  windowobjectname = std::string() );
+
         };
-
-
     }
 }
 

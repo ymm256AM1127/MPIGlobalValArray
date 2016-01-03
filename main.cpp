@@ -202,7 +202,7 @@ int main(int argc, char *argv[])
 {
     _MYNAMESPACE_::MPI::WindowObject<double> rmaobj( comm, 10000, 0, "test" );
     _MYNAMESPACE_::MPI::WindowObject<int> rmaobj1( comm, 10000, 0, "test1" );
-    _MYNAMESPACE_::MPI::WindowObject<float> rmaobj2( comm, 10000, 0, "test1" );
+    _MYNAMESPACE_::MPI::WindowObject<double> rmaobj2( comm, 10000, 0, "test1" );
     comm->Barrier();
 
     double val;
@@ -215,11 +215,17 @@ int main(int argc, char *argv[])
 //        rmaobj2.Write( 454.090, 9000 );
 //        rmaobj.Write( 555.555, 8000 );
 
-        rmaobj[50] = 0.7777;
+        rmaobj[50] = 0.7777 *( comm->GetMPIRank() + 1.0);
 //    }
     comm->Barrier();
 
     qDebug() <<  rmaobj[50] << rmaobj[ 8000 ]/* << MPIEnvPtr->GetHostName().c_str()*/;
+
+    rmaobj2 = rmaobj;
+
+    comm->Barrier();
+
+    qDebug() <<  rmaobj2[50] << rmaobj2[ 8000 ]/* << MPIEnvPtr->GetHostName().c_str()*/;
 }
 //MPI_Barrier( MPI_COMM_WORLD );
 
