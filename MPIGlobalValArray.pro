@@ -1,7 +1,7 @@
 QT += core
 QT -= gui
 
-TARGET = MPIVector
+TARGET = MPIGlobalValArray
 CONFIG += console c++11
 CONFIG -= app_bundle
 
