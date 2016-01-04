@@ -1,20 +1,11 @@
 #include <iostream>
 #include <mpi.h>
-#include <algorithm>
-#include <numeric>
 #include <vector>
-//#include "MPISharedVector.h"
 #include <QElapsedTimer>
-#include <memory.h>
 #include <QDebug>
-
-#include "include/MPI/Environment.h"
-#include "include/MPI/Communicator.h"
-#include "include/MPI/WindowObject.h"
 
 #include "test/Test.h"
 
-//const int ExecCount = 100;
 
 int main(int argc, char *argv[])
 {
