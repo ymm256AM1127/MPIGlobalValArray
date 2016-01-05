@@ -33,11 +33,11 @@ int main(int argc, char *argv[])
     array2[ 20 ] = 1.0;
     array2[ 80 ] = 3.0;
     array3[ 20 ] = -13.0;
-    array3[ 80 ] = -328.0;
+    array3[ 80 ] = -19.0;
 
     comm->Barrier();
 
-    array1 = ( array1 + Sin( array2 + Cos( array3 ) ) );
+    array1 = Pow( array1, 2.0 ) + Sqrt( array2 + Cos( array3 ) ) ;
 
     comm->Barrier();
 

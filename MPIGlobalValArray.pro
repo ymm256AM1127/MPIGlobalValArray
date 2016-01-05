@@ -80,5 +80,7 @@ HEADERS += \
     include/MPI/WindowObjAllocator.h \
     include/MPI/detail/WindowObjAllocatorImpl.h \
     test/Test.h \
-    include/MPI/ValArray.h
+    include/MPI/ValArray.h \
+    include/MPI/ExpressionTemplate.h \
+    include/MPI/detail/ValArrayImpl.h
 
