@@ -28,7 +28,7 @@ namespace _MYNAMESPACE_
         {
             using result_type = typename Op::result_type;
             using value_type  = typename Arg0::value_type;
-            using size_t      = typename Arg0::size_t;
+            using size_t      = std::size_t;
 
             const Op    Operation;
             const Arg0&  Argument0;
@@ -260,7 +260,7 @@ namespace _MYNAMESPACE_
             }
 
             template < class R >
-            friend val_expression< UnaryOp< CosExpression< T >, R > > Tan ( const R& r )
+            friend val_expression< UnaryOp< TanExpression< T >, R > > Tan ( const R& r )
             {
                 using Op = UnaryOp< TanExpression< T >, R >;
                 return val_expression< Op >( Op( TanExpression< T >() , r ) );

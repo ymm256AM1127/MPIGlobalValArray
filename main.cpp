@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 
     comm->Barrier();
 
-    array1 = ( array1 + array2 + Cos( array3 ) );
+    array1 = ( array1 + Sin( array2 + Cos( array3 ) ) );
 
     comm->Barrier();
 
