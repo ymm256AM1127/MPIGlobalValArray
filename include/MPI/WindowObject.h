@@ -29,7 +29,9 @@ namespace _MYNAMESPACE_
             using pointer        = value_type*;
             using CommPtr        = Environment::CommPtr;
             using allocator_type = Allocator;
+            using size_t         = std::size_t;
 
+            WindowObject();
             explicit WindowObject( CommPtr comm,
                                    const std::size_t size,
                                    const std::size_t localhalosize = 0,
@@ -69,6 +71,9 @@ namespace _MYNAMESPACE_
             operator T () const;
             const WindowObject& operator[]( const std::size_t index ) const;
             WindowObject&   operator []( const std::size_t index );
+
+            const value_type LocalAt( const std::size_t index ) const;
+
             //! ===================================================================== Basic Operation
 
             //! Getter Property =====================================================================
@@ -107,6 +112,11 @@ namespace _MYNAMESPACE_
                                  const std::size_t offsetfrombaseptr,
                                  const std::size_t count,
                                  const int targetRank ) const;
+            inline void     Acc( value_type* baseptr,
+                                 const std::size_t offsetfrombaseptr,
+                                 const std::size_t count,
+                                 const int targetRank,
+                                 const MPI_Op Op ) const;
 
             //! アドレスを取得できないようにする。
             void            operator &() const{}

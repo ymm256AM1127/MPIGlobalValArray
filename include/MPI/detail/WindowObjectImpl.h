@@ -14,6 +14,16 @@ namespace _MYNAMESPACE_
     namespace MPI
     {
         template < class T, class Allocator >
+        WindowObject<T, Allocator>::WindowObject()
+            : m_WindowObj( MPI_WIN_NULL ),
+              m_GlobalSize( 0 ),
+              m_LocalHaloSize( 0 ),
+              m_CurrentIndex( 0 )
+        {
+
+        }
+
+        template < class T, class Allocator >
         /*!
          * \brief WindowObject<T, Allocator>::WindowObject
          * \param size
@@ -38,6 +48,10 @@ namespace _MYNAMESPACE_
          * \param rhs
          */
         WindowObject<T, Allocator>::WindowObject(const WindowObject &rhs)
+            : m_WindowObj( MPI_WIN_NULL ),
+              m_GlobalSize( 0 ),
+              m_LocalHaloSize( 0 ),
+              m_CurrentIndex( 0 )
         {
             *this = rhs;
         }
@@ -87,6 +101,7 @@ namespace _MYNAMESPACE_
             int  flag = 0;
             MPI_Win_get_attr( m_WindowObj, MPI_WIN_SIZE, &win_size, &flag );
             m_LocalCapacity = static_cast< std::size_t >(*win_size) / sizeof( value_type );
+
             m_LocalSize     = m_LocalCapacity - m_LocalHaloSize;
         }
 
@@ -276,6 +291,26 @@ namespace _MYNAMESPACE_
         }
 
         template < class T, class Allocator >
+        void WindowObject<T, Allocator>::Acc( value_type *baseptr,
+                                              const std::size_t offsetfrombaseptr,
+                                              const std::size_t count,
+                                              const int targetRank,
+                                              const MPI_Op Op ) const
+        {
+            this->LockShared( targetRank );
+            MPI_Accumulate( baseptr,
+                            count,
+                            MPIDATATYPE<T>(),
+                            targetRank,
+                            offsetfrombaseptr,
+                            count,
+                            MPIDATATYPE<T>(),
+                            Op,
+                            m_WindowObj );
+            this->Unlock( targetRank );
+        }
+
+        template < class T, class Allocator >
         void WindowObject<T, Allocator>::Fence() const
         {
             MPI_Win_fence( MPI_WIN_DEFAULT_ASSERTION, m_WindowObj );
@@ -331,7 +366,7 @@ namespace _MYNAMESPACE_
         template < class T, class Allocator >
         const WindowObject<T, Allocator> &WindowObject<T, Allocator>::operator[](const std::size_t index) const
         {
-            m_CurrentIndex = index;
+            const_cast< std::size_t& >( m_CurrentIndex ) = index;
             return *this;
         }
 
@@ -340,6 +375,21 @@ namespace _MYNAMESPACE_
         {
             m_CurrentIndex = index;
             return *this;
+        }
+
+        template < class T, class Allocator >
+        /*!
+         * \brief WindowObject<T, Allocator>::LocalAt
+         * \param index
+         * \return
+         */
+        const typename WindowObject<T, Allocator>::value_type WindowObject<T, Allocator>::LocalAt(const std::size_t index) const
+        {
+            if( index >= m_LocalCapacity )
+            {
+                throw std::out_of_range("Window object out of range.");
+            }
+            return m_BasePtr[ index ];
         }
 
         template < class T, class Allocator >
