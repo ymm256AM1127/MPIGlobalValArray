@@ -479,6 +479,14 @@ namespace _MYNAMESPACE_
                 this->Write( baseptr + m_LocalSize, m_LocalSize, count - m_LocalSize );
             }
         }
+
+
+        template < class T, class Allocator >
+        typename WindowObject<T, Allocator>::CommPtr WindowObject<T, Allocator>::GetCommPtr() const
+        {
+            return m_Communicator;
+        }
+
     }
 }
 

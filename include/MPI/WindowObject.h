@@ -83,6 +83,7 @@ namespace _MYNAMESPACE_
             std::size_t     GetLocalHaloSize() const;
             std::size_t     GetDisplacementUnitSize() const;
             std::string     GetWindowObjName() const;
+            CommPtr         GetCommPtr() const;
             //! ===================================================================== Getter Property
 
             //! Setter Property =====================================================================

@@ -62,13 +62,15 @@ namespace _MYNAMESPACE_
             template< class T > int Alltoall ( const T &SendBuffer,
                                                T &RecvBuffer, const int itemCount = 0 );
 
-            template< int OP, class T > int Reduce   ( const typename reducible_type<T>::type &SendBuffer,
-                                                       typename reducible_type<T>::type &RecvBuffer,
-                                                       const int rootRank, const int itemCount = 0 );
+            template< class T > int Reduce   ( const typename reducible_type<T>::type &SendBuffer,
+                                               typename reducible_type<T>::type &RecvBuffer,
+                                               MPI_Op Op,
+                                               const int rootRank, const int itemCount = 0 );
 
-            template< int OP, class T > int Allreduce( const typename reducible_type<T>::type &SendBuffer,
-                                                       typename reducible_type<T>::type &RecvBuffer,
-                                                       const int itemCount = 0 );
+            template< class T > int Allreduce( const typename reducible_type<T>::type &SendBuffer,
+                                               typename reducible_type<T>::type &RecvBuffer,
+                                               MPI_Op Op,
+                                               const int itemCount = 0 );
 
             using WinObsSetType = std::set< std::function< void() >* >;
 

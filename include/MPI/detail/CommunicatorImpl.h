@@ -185,7 +185,7 @@ namespace _MYNAMESPACE_
             return _Alltoall_< T >( typename comm_trais<T>::tag(), SendBuffer, RecvBuffer, this, itemCount );
         }
 
-        template<int OP,  class T  >
+        template< class T  >
         /*!
          * \brief Reduce
          * \param SendBuffer
@@ -195,13 +195,19 @@ namespace _MYNAMESPACE_
          * \return
          */
         int Communicator::Reduce( const typename reducible_type<T>::type &SendBuffer,
-                                  typename reducible_type<T>::type &RecvBuffer, const int rootRank, const int itemCount )
+                                  typename reducible_type<T>::type &RecvBuffer,
+                                  MPI_Op Op,
+                                  const int rootRank, const int itemCount )
         {
-            return _Reduce_< T >( typename comm_trais<T>::tag(), MPIOpType< T, OP >(),
-                             SendBuffer, RecvBuffer, rootRank, this, itemCount );
+            return _Reduce_< T >( typename comm_trais<T>::tag(), Op,
+                                  SendBuffer,
+                                  RecvBuffer,
+                                  rootRank,
+                                  this,
+                                  itemCount );
         }
 
-        template<int OP,  class T  >
+        template< class T  >
         /*!
          * \brief Allreduce
          * \param SendBuffer
@@ -210,9 +216,16 @@ namespace _MYNAMESPACE_
          * \return
          */
         int Communicator::Allreduce( const typename reducible_type<T>::type &SendBuffer,
-                                     typename reducible_type<T>::type &RecvBuffer, const int itemCount )
+                                     typename reducible_type<T>::type &RecvBuffer,
+                                     MPI_Op Op,
+                                     const int itemCount )
         {
-            return _Allreduce_<T>( typename comm_trais<T>::tag(), MPIOpType<T,OP>(), SendBuffer, RecvBuffer, this, itemCount );
+            return _Allreduce_<T>( typename comm_trais<T>::tag(),
+                                   Op,
+                                   SendBuffer,
+                                   RecvBuffer,
+                                   this,
+                                   itemCount );
         }
     }
 }

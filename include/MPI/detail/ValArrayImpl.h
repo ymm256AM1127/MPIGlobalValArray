@@ -2,6 +2,7 @@
 #define VALARRAYIMPL_H
 
 #include "../ValArray.h"
+#include "../Communicator.h"
 
 namespace _MYNAMESPACE_
 {
@@ -80,6 +81,35 @@ namespace _MYNAMESPACE_
             }
 
             return *this;
+        }
+
+        template < class T >
+        template< class expression >
+        ValArray<T>& ValArray<T>::operator=( const expression& rhs )
+        {
+            auto lhsptr = this->GetBasePtr();
+            for( auto ii = 0UL; ii < this->GetLocalSize(); ii++ )
+            {
+                lhsptr[ii] = rhs[ii];
+            }
+
+            return *this;
+        }
+
+
+        template < class T >
+        T ValArray<T>::sum()
+        {
+            T val = 0.0;
+            for( auto ii = 0UL; ii < this->GetLocalSize(); ii++ )
+            {
+                val += this->GetBasePtr()[ii];
+            }
+            CommPtr Comm = this->GetCommPtr();
+            Comm->Barrier();
+            T out = 0.0;
+            Comm->Allreduce<T>( val, out, MPI_SUM, 1 );
+            return out;
         }
     }
 }

@@ -25,6 +25,8 @@ namespace _MYNAMESPACE_
             ValArray( const ValArray& rhs );
 
             ValArray&           operator =( const ValArray& rhs );
+            template< class expression >
+            ValArray&           operator=( const expression& rhs );
 
             ~ValArray(){}
 
@@ -33,17 +35,7 @@ namespace _MYNAMESPACE_
             ValArray&           operator*=( const ValArray& rhs );
             ValArray&           operator/=( const ValArray& rhs );
 
-            template< class expression >
-            ValArray&           operator=( const expression& rhs )
-            {
-                auto lhsptr = this->GetBasePtr();
-                for( auto ii = 0UL; ii < this->GetLocalSize(); ii++ )
-                {
-                    lhsptr[ii] = rhs[ii];
-                }
-
-                return *this;
-            }
+            T                   sum() ;
 
             template < class L, class R >
             friend val_expression< BinaryOp2< PowExpression< T >, L, R > > Pow ( const L& l, const R& r )

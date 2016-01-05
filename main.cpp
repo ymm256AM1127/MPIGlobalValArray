@@ -41,7 +41,9 @@ int main(int argc, char *argv[])
 
     comm->Barrier();
 
-    qDebug() << array1[ 20 ] << array1[ 80 ];
+    auto sum = array1.sum();
+
+    qDebug() << array1[ 20 ] << array1[ 80 ] << sum;
 
     return 0;
 }
