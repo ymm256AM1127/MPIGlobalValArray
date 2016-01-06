@@ -1,4 +1,4 @@
-#include "../../include/MPI/Environment.h"
+﻿#include "../../include/MPI/Environment.h"
 
 
 #include <iostream>
@@ -47,10 +47,10 @@ namespace _MYNAMESPACE_
         #else
             int provided = 0;
             MPI_Init_thread( &argc, &argv, MPI_THREAD_MULTIPLE, &provided );
-            if( provided != MPI_THREAD_MULTIPLE )
+            if( provided != MPI_THREAD_MULTIPLE && provided != MPI_THREAD_SERIALIZED )
             {
                 std::stringstream ss;
-                ss << "Error Code: " << NOTSUPPORTTHREADMULTIPLE << " => it does not definde MPI Thread Multiple." << std::endl;
+                ss << "Error Code: " << NOTSUPPORTTHREADMULTIPLE << " => it does not definde MPI Thread Multiple or MPI Thread Serialized." << std::endl;
                 throw std::domain_error( ss.str() );
                 Finalize();
                 Abort( NOTSUPPORTTHREADMULTIPLE );

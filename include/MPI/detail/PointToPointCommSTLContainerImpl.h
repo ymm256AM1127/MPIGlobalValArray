@@ -1,4 +1,4 @@
-#ifndef POINTTOPOINTCOMMSTLCONTAINERIMPL_H
+﻿#ifndef POINTTOPOINTCOMMSTLCONTAINERIMPL_H
 #define POINTTOPOINTCOMMSTLCONTAINERIMPL_H
 
 #include "../PotinToPointCommSTLContainer.h"
@@ -83,7 +83,28 @@ namespace _MYNAMESPACE_
             Utility::ScopedMutex<std::mutex> locker( &comm->Mutex() );
             std::function<void()> func = [&dataSend, dest, count, i32Tag, comm]()
             {
-                _Send_<T>( std_container_traits_tag(), dataSend, dest, i32Tag, comm, count );
+                int targetCount = static_cast< int >( dataSend.size() );
+
+                MPI_Request request_size;
+                //! 転送サイズを予め通知
+                MPI_Isend( (void*)&targetCount, 1, MPIDATATYPE<int>(), dest, i32Tag, comm->GetCommunicator(), &request_size );
+                //! マルチスレッドで実行されるので非同期で待つ
+                //! ここにMutexを入れたほうがよい？
+                MPI_Wait( &request_size, MPI_STATUS_IGNORE );
+
+                MPI_Request request_data;
+
+                MPI_Isend( (void*)dataSend.data(),
+                           targetCount,
+                           MPIDATATYPE< typename T::value_type >(),
+                           dest,
+                           i32Tag,
+                           comm->GetCommunicator(),
+                           &request_data );
+
+                MPI_Wait( &request_data, MPI_STATUS_IGNORE );
+
+//                _Send_<T>( std_container_traits_tag(), dataSend, dest, i32Tag, comm, count );
             };
             comm->ThreadPool().push_back( std::thread( func ) );
 
@@ -98,7 +119,32 @@ namespace _MYNAMESPACE_
             Utility::ScopedMutex<std::mutex> locker( &comm->Mutex() );
             std::function<void()> func = [ &dataRecv, source, count, i32Tag, comm]()
             {
-                _Recv_<T>( std_container_traits_tag(), dataRecv, source, i32Tag, comm, count );
+                int targetCount = count;
+                MPI_Request request_size;
+
+                MPI_Irecv( (void*)&targetCount, 1, MPIDATATYPE<int>(), source, i32Tag, comm->GetCommunicator(), &request_size );
+
+                //! マルチスレッドで実行されるので非同期で待つ
+                //! ここにMutexを入れたほうがよい？
+                MPI_Wait( &request_size, MPI_STATUS_IGNORE );
+
+                T tempbuffer( targetCount, ZEROVALUE<typename T::value_type >() );
+
+                MPI_Request request_data;
+
+                MPI_Irecv( (void*)tempbuffer.data(),
+                           targetCount,
+                           MPIDATATYPE< typename T::value_type >(),
+                           source,
+                           i32Tag,
+                           comm->GetCommunicator(),
+                           &request_data );
+
+                MPI_Wait( &request_data, MPI_STATUS_IGNORE );
+
+                tempbuffer.swap( dataRecv );
+
+//                _Recv_<T>( std_container_traits_tag(), dataRecv, source, i32Tag, comm, count );
             };
             comm->ThreadPool().push_back( std::thread( func ) );
 

@@ -1,4 +1,4 @@
-#ifndef DATATYPEDEFINE_H
+﻿#ifndef DATATYPEDEFINE_H
 #define DATATYPEDEFINE_H
 
 #include "../SharedLibraryDefine.h"
@@ -21,6 +21,11 @@ namespace _MYNAMESPACE_
         /*!
          * Base template MPIDATATYPE
          */
+
+        template < class T > inline T ZEROVALUE(){ return T(0); }
+        template<>
+        inline std::complex<float> ZEROVALUE(){ return std::complex<float>(0.0f,0.0f); }
+        inline std::complex<double> ZEROVALUE(){ return std::complex<double>(0.0f,0.0f); }
 
         template < class T > inline MPI_Datatype MPIDATATYPE() { return MPI_Datatype(0); }
 

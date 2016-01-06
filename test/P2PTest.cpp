@@ -1,4 +1,4 @@
-#include "Test.h"
+﻿#include "Test.h"
 
 int P2PTest( _MYNAMESPACE_::MPI::Environment::CommPtr &comm )
 {
@@ -47,12 +47,16 @@ int P2PTest( _MYNAMESPACE_::MPI::Environment::CommPtr &comm )
     std::string strin;
     if( comm->GetMPIRank() == 0 )
     {
-        comm->Send( strout, 1 );
+        comm->Isend( strout, 1 );
     }
     else if( comm->GetMPIRank() == 1 )
     {
-        comm->Recv( strin, 0 );
+        comm->Irecv( strin, 0 );
     }
+
+    comm->WaitAll();
+
+    std::cout << "rank" << comm->GetMPIRank() << " : " << strin << std::endl;
 
     comm->Barrier();
 
