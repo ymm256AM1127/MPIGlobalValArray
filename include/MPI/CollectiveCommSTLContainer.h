@@ -1,4 +1,4 @@
-#ifndef COLLECTIVECOMMCONTAINER_H
+﻿#ifndef COLLECTIVECOMMCONTAINER_H
 #define COLLECTIVECOMMCONTAINER_H
 
 #include "../SharedLibraryDefine.h"

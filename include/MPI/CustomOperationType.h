@@ -1,4 +1,4 @@
-#ifndef CUSTOMOPERATIONTYPE_H
+﻿#ifndef CUSTOMOPERATIONTYPE_H
 #define CUSTOMOPERATIONTYPE_H
 
 #include <mpi.h>

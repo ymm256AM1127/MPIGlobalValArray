@@ -1,4 +1,4 @@
-#ifndef COMMUNICATORTRAITS_H
+﻿#ifndef COMMUNICATORTRAITS_H
 #define COMMUNICATORTRAITS_H
 
 #include <list>

@@ -32,8 +32,8 @@ namespace _MYNAMESPACE_
         class WinAllocateInterface
         {
         public:
-            using CommPtr         = Environment::CommPtr;
-            using size_t          = std::size_t;
+            using CommPtr        = Environment::CommPtr;
+            using size_t         = std::size_t;
             using value_type     = T;
             using pointer        = value_type*;
 

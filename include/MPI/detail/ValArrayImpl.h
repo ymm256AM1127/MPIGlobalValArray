@@ -8,31 +8,31 @@ namespace _MYNAMESPACE_
 {
     namespace MPI
     {
-        template < class T >
-        ValArray<T>::ValArray( CommPtr comm,
+        template < class Policy >
+        ValArray<Policy>::ValArray( CommPtr comm,
                                const std::size_t size,
                                const std::size_t localhalosize,
                                const std::string &windowobjectname ) :
-            WindowObject<T>( comm, size, localhalosize, windowobjectname )
+            Policy( comm, size, localhalosize, windowobjectname )
         {
 
         }
 
-        template < class T >
-        ValArray<T>::ValArray( const ValArray &rhs ) :
-            WindowObject<T>( static_cast< const WindowObject<T> >(rhs) )
+        template < class Policy >
+        ValArray<Policy>::ValArray( const ValArray &rhs ) :
+            Policy( static_cast< const Policy >(rhs) )
         {
 
         }
 
-        template < class T >
-        ValArray<T>& ValArray<T>::operator =(const ValArray<T> &rhs)
+        template < class Policy >
+        ValArray<Policy>& ValArray<Policy>::operator =(const ValArray<Policy> &rhs)
         {
-            return static_cast< ValArray<T>& >( WindowObject<T>::operator =( rhs ) );
+            return static_cast< ValArray<Policy>& >( Policy::operator =( rhs ) );
         }
 
-        template < class T >
-        ValArray<T>& ValArray<T>::operator+=( const ValArray &rhs )
+        template < class Policy >
+        ValArray<Policy>& ValArray<Policy>::operator+=( const ValArray &rhs )
         {
             auto lhsptr = this->GetBasePtr();
             auto rhsptr = rhs.GetBasePtr();
@@ -44,8 +44,8 @@ namespace _MYNAMESPACE_
             return *this;
         }
 
-        template < class T >
-        ValArray<T>& ValArray<T>::operator-=( const ValArray &rhs )
+        template < class Policy >
+        ValArray<Policy>& ValArray<Policy>::operator-=( const ValArray &rhs )
         {
             auto lhsptr = this->GetBasePtr();
             auto rhsptr = rhs.GetBasePtr();
@@ -57,8 +57,8 @@ namespace _MYNAMESPACE_
             return *this;
         }
 
-        template < class T >
-        ValArray<T>& ValArray<T>::operator*=( const ValArray &rhs )
+        template < class Policy >
+        ValArray<Policy>& ValArray<Policy>::operator*=( const ValArray &rhs )
         {
             auto lhsptr = this->GetBasePtr();
             auto rhsptr = rhs.GetBasePtr();
@@ -70,8 +70,8 @@ namespace _MYNAMESPACE_
             return *this;
         }
 
-        template < class T >
-        ValArray<T>& ValArray<T>::operator/=( const ValArray &rhs )
+        template < class Policy >
+        ValArray<Policy>& ValArray<Policy>::operator/=( const ValArray &rhs )
         {
             auto lhsptr = this->GetBasePtr();
             auto rhsptr = rhs.GetBasePtr();
@@ -83,9 +83,9 @@ namespace _MYNAMESPACE_
             return *this;
         }
 
-        template < class T >
+        template < class Policy >
         template< class expression >
-        ValArray<T>& ValArray<T>::operator=( const expression& rhs )
+        ValArray<Policy>& ValArray<Policy>::operator=( const expression& rhs )
         {
             auto lhsptr = this->GetBasePtr();
             for( auto ii = 0UL; ii < this->GetLocalSize(); ii++ )
@@ -97,18 +97,18 @@ namespace _MYNAMESPACE_
         }
 
 
-        template < class T >
-        T ValArray<T>::sum()
+        template < class Policy >
+        typename Policy::value_type ValArray<Policy>::sum()
         {
-            T val = 0.0;
+            typename Policy::value_type val = 0.0;
             for( auto ii = 0UL; ii < this->GetLocalSize(); ii++ )
             {
                 val += this->GetBasePtr()[ii];
             }
             CommPtr Comm = this->GetCommPtr();
             Comm->Barrier();
-            T out = 0.0;
-            Comm->Allreduce<T>( val, out, MPI_SUM, 1 );
+            typename Policy::value_type out = 0.0;
+            Comm->Allreduce<typename Policy::value_type>( val, out, MPI_SUM, 1 );
             return out;
         }
     }

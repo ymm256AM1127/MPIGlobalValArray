@@ -1,4 +1,4 @@
-#ifndef COMMUNICATORIMPL_H
+﻿#ifndef COMMUNICATORIMPL_H
 #define COMMUNICATORIMPL_H
 
 #include "../Communicator.h"
@@ -231,6 +231,4 @@ namespace _MYNAMESPACE_
 }
 #endif // COMMUNICATORIMPL_H
 
-//#include "CommunicatorPodTraitImpl.h"
-//#include "CommunicatorSTLContainerTraitImpl.h"
 

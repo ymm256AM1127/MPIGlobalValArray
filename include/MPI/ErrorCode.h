@@ -1,4 +1,4 @@
-#ifndef ERRORCODE_H
+﻿#ifndef ERRORCODE_H
 #define ERRORCODE_H
 
 #include "../SharedLibraryDefine.h"

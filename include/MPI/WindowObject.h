@@ -1,4 +1,4 @@
-#ifndef WINDOWOBJECT_H
+﻿#ifndef WINDOWOBJECT_H
 #define WINDOWOBJECT_H
 
 #include <mpi.h>
@@ -131,7 +131,8 @@ namespace _MYNAMESPACE_
     }
 }
 
+#endif // WINDOWOBJECT_H
+
 #include "./detail/WindowObjectImpl.h"
 
-#endif // WINDOWOBJECT_H
 

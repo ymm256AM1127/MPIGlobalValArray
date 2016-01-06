@@ -1,4 +1,4 @@
-#ifndef VALARRAY_H
+﻿#ifndef VALARRAY_H
 #define VALARRAY_H
 
 #include "WindowObject.h"
@@ -8,15 +8,15 @@ namespace _MYNAMESPACE_
 {
     namespace MPI
     {
-        template < class T >
-        class ValArray : public WindowObject<T>
+        template < class Policy >
+        class ValArray : public Policy
         {
         public:
-            using value_type     = typename std::enable_if< MPL::is_pod< T >::value, T >::type;
+            using value_type     = typename std::enable_if< MPL::is_pod< typename Policy::value_type >::value, typename Policy::value_type >::type;
             using pointer        = value_type*;
             using CommPtr        = Environment::CommPtr;
 
-            using WindowObject<T>::operator [];
+            using Policy::operator [];
 
             explicit ValArray( CommPtr comm,
                                const std::size_t size,
@@ -35,55 +35,55 @@ namespace _MYNAMESPACE_
             ValArray&           operator*=( const ValArray& rhs );
             ValArray&           operator/=( const ValArray& rhs );
 
-            T                   sum() ;
+            typename Policy::value_type                   sum() ;
 
             template < class L, class R >
-            friend val_expression< BinaryOp2< PowExpression< T >, L, R > > Pow ( const L& l, const R& r )
+            friend val_expression< BinaryOp2< PowExpression< typename Policy::value_type >, L, R > > Pow ( const L& l, const R& r )
             {
-                using Op = BinaryOp2< PowExpression< T >, L, R >;
-                return val_expression< Op >( Op( PowExpression< T >() , l, r ) );
+                using Op = BinaryOp2< PowExpression< typename Policy::value_type >, L, R >;
+                return val_expression< Op >( Op( PowExpression< typename Policy::value_type >() , l, r ) );
             }
 
             template < class L, class R >
-            friend val_expression< BinaryOp2< ATan2Expression< T >, L, R > > ATan2 ( const L& l, const R& r )
+            friend val_expression< BinaryOp2< ATan2Expression< typename Policy::value_type >, L, R > > ATan2 ( const L& l, const R& r )
             {
-                using Op = BinaryOp2< ATan2Expression< T >, L, R >;
-                return val_expression< Op >( Op(ATan2Expression< T >() , l, r ) );
+                using Op = BinaryOp2< ATan2Expression< typename Policy::value_type >, L, R >;
+                return val_expression< Op >( Op(ATan2Expression< typename Policy::value_type >() , l, r ) );
             }
 
             template < class L, class R >
-            friend val_expression< BinaryOp< AddExpression< T >, L, R > > operator +( const L& l, const R& r )
+            friend val_expression< BinaryOp< AddExpression< typename Policy::value_type >, L, R > > operator +( const L& l, const R& r )
             {
-                using Op = BinaryOp< AddExpression< T >, L, R >;
-                return val_expression< Op >( Op( AddExpression< T >() , l, r ) );
+                using Op = BinaryOp< AddExpression< typename Policy::value_type >, L, R >;
+                return val_expression< Op >( Op( AddExpression< typename Policy::value_type >() , l, r ) );
             }
 
             template < class L, class R >
-            friend val_expression< BinaryOp< SubExpression< T >, L, R > > operator -( const L& l, const R& r )
+            friend val_expression< BinaryOp< SubExpression< typename Policy::value_type >, L, R > > operator -( const L& l, const R& r )
             {
-                using Op = BinaryOp< SubExpression< T >, L, R >;
-                return val_expression< Op >( Op( SubExpression< T >() , l, r ) );
+                using Op = BinaryOp< SubExpression< typename Policy::value_type >, L, R >;
+                return val_expression< Op >( Op( SubExpression< typename Policy::value_type >() , l, r ) );
             }
 
             template < class L, class R >
-            friend val_expression< BinaryOp< MulExpression< T >, L, R > > operator *( const L& l, const R& r )
+            friend val_expression< BinaryOp< MulExpression< typename Policy::value_type >, L, R > > operator *( const L& l, const R& r )
             {
-                using Op = BinaryOp< MulExpression< T >, L, R >;
-                return val_expression< Op >( Op( MulExpression< T >() , l, r ) );
+                using Op = BinaryOp< MulExpression< typename Policy::value_type >, L, R >;
+                return val_expression< Op >( Op( MulExpression< typename Policy::value_type >() , l, r ) );
             }
 
             template < class L, class R >
-            friend val_expression< BinaryOp< DivExpression< T >, L, R > > operator /( const L& l, const R& r )
+            friend val_expression< BinaryOp< DivExpression< typename Policy::value_type >, L, R > > operator /( const L& l, const R& r )
             {
-                using Op = BinaryOp< DivExpression< T >, L, R >;
-                return val_expression< Op >( Op( DivExpression< T >() , l, r ) );
+                using Op = BinaryOp< DivExpression< typename Policy::value_type >, L, R >;
+                return val_expression< Op >( Op( DivExpression< typename Policy::value_type >() , l, r ) );
             }
 
             #define REGIST_VAL_EXPRESSION_UNARY( type ) template < class R > \
-            friend val_expression< UnaryOp< type##Expression< T >, R > > type ( const R& r ) \
+            friend val_expression< UnaryOp< type##Expression< typename Policy::value_type >, R > > type ( const R& r ) \
             { \
-                using Op = UnaryOp< type##Expression< T >, R >; \
-                return val_expression< Op >( Op( type##Expression< T >() , r ) ); \
+                using Op = UnaryOp< type##Expression< typename Policy::value_type >, R >; \
+                return val_expression< Op >( Op( type##Expression< typename Policy::value_type >() , r ) ); \
             } \
 
             REGIST_VAL_EXPRESSION_UNARY( Abs )
@@ -110,5 +110,3 @@ namespace _MYNAMESPACE_
 #endif // MPIVALARRAY_H
 
 #include "detail/ValArrayImpl.h"
-
-

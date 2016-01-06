@@ -1,4 +1,4 @@
-#ifndef POINTTOPOINCOMMSTLCONTAINER_H
+﻿#ifndef POINTTOPOINCOMMSTLCONTAINER_H
 #define POINTTOPOINCOMMSTLCONTAINER_H
 
 #include "../SharedLibraryDefine.h"
@@ -22,4 +22,5 @@ namespace _MYNAMESPACE_
 #endif // POINTTOPOINCOMMSTLCONTAINER_H
 
 #include "detail/PointToPointCommSTLContainerImpl.h"
+
 

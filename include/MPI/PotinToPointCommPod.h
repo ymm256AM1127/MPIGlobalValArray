@@ -1,4 +1,4 @@
-#ifndef POINTTOPOINCOMMPOD_H
+﻿#ifndef POINTTOPOINCOMMPOD_H
 #define POINTTOPOINCOMMPOD_H
 
 #include "../SharedLibraryDefine.h"
@@ -22,4 +22,5 @@ namespace _MYNAMESPACE_
 #endif // POINTTOPOINCOMMPOD_H
 
 #include "detail/PointToPointCommPodImpl.h"
+
 

@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 
 //    WindowObjectTest( comm );
 
-    ValArray<double> array1( comm, 100, 0 );
+    ValArray< WindowObject< double > > array1( comm, 100, 0 );
     auto array2 = array1;
     auto array3 = array1;
 
@@ -35,10 +35,11 @@ int main(int argc, char *argv[])
     array3[ 20 ] = -13.0;
     array3[ 80 ] = -19.0;
 
-    comm->Barrier();
+    array1.Fence();
 
     array1 = Pow( array1, 2.0 ) + Sqrt( array2 + Cos( array3 ) ) ;
 
+    array1.Fence();
     comm->Barrier();
 
     auto sum = array1.sum();

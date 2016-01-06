@@ -1,4 +1,4 @@
-#ifndef COLLECTIVECOMMPOD_H
+﻿#ifndef COLLECTIVECOMMPOD_H
 #define COLLECTIVECOMMPOD_H
 
 #include "../SharedLibraryDefine.h"

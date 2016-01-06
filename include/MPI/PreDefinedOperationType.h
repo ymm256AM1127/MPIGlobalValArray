@@ -1,4 +1,4 @@
-#ifndef OPERATIONTYPE_H
+﻿#ifndef OPERATIONTYPE_H
 #define OPERATIONTYPE_H
 
 #include <mpi.h>

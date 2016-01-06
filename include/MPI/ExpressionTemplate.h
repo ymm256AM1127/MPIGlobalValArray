@@ -1,4 +1,4 @@
-#ifndef EXPRESSIONTEMPLATE_H
+﻿#ifndef EXPRESSIONTEMPLATE_H
 #define EXPRESSIONTEMPLATE_H
 
 #include <cmath>
