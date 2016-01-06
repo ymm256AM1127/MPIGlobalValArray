@@ -1,4 +1,4 @@
-#ifndef WINDOWOBJALLOCATORIMPL_H
+﻿#ifndef WINDOWOBJALLOCATORIMPL_H
 #define WINDOWOBJALLOCATORIMPL_H
 
 #include "../../MPI/WindowObjAllocator.h"
@@ -10,6 +10,7 @@ namespace _MYNAMESPACE_
         template < class T >
         int WinAllocate<T>::CreateWindowObj( pointer &baseptr,
                                              MPI_Win &win,
+                                             size_t  &localCapacityCount,
                                              Environment::CommPtr comm,
                                              const size_t globalsize,
                                              const size_t localhalosize,
@@ -34,6 +35,8 @@ namespace _MYNAMESPACE_
                                          comm->GetCommunicator(),
                                          &baseptr,
                                          &win );
+
+            localCapacityCount = LocalSize;
 
             if( MPI_SUCCESS != ret )
             {

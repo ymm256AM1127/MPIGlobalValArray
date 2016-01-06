@@ -1,4 +1,4 @@
-#ifndef WINDOWOBJECTIMPL_H
+﻿#ifndef WINDOWOBJECTIMPL_H
 #define WINDOWOBJECTIMPL_H
 
 #include "../WindowObject.h"
@@ -81,6 +81,7 @@ namespace _MYNAMESPACE_
             //! ここにアロケータを書く
             m_Allocator.CreateWindowObj( m_BasePtr,
                                          m_WindowObj,
+                                         m_LocalCapacity,
                                          comm,
                                          size,
                                          localhalosize,
@@ -96,11 +97,6 @@ namespace _MYNAMESPACE_
             };
 
             m_Communicator->RegisterWinObjSet( &Deletor );
-
-            MPI_Aint* win_size = nullptr;
-            int  flag = 0;
-            MPI_Win_get_attr( m_WindowObj, MPI_WIN_SIZE, &win_size, &flag );
-            m_LocalCapacity = static_cast< std::size_t >(*win_size) / sizeof( value_type );
 
             m_LocalSize     = m_LocalCapacity - m_LocalHaloSize;
         }

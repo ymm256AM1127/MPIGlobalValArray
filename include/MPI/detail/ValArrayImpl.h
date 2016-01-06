@@ -1,4 +1,4 @@
-#ifndef VALARRAYIMPL_H
+﻿#ifndef VALARRAYIMPL_H
 #define VALARRAYIMPL_H
 
 #include "../ValArray.h"

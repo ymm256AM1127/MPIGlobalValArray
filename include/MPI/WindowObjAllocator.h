@@ -1,4 +1,4 @@
-#ifndef WINDOWOBJALLOCATOR_H
+﻿#ifndef WINDOWOBJALLOCATOR_H
 #define WINDOWOBJALLOCATOR_H
 
 #include <type_traits>
@@ -36,12 +36,10 @@ namespace _MYNAMESPACE_
             using size_t          = std::size_t;
             using value_type     = T;
             using pointer        = value_type*;
-//            using const_pointer   = const value_type*;
-//            using reference       = value_type&;
-//            using const_reference = const value_type&;
 
-            int CreateWindowObj( pointer &baseptr,  // out
-                                 MPI_Win &win,     // out
+            int CreateWindowObj( pointer &baseptr,       // out
+                                 MPI_Win &win,           // out
+                                 size_t  &localCapacityCount, // out
                                  CommPtr* comm,
                                  const size_t globalsize,
                                  const size_t localhalosize,
@@ -49,6 +47,7 @@ namespace _MYNAMESPACE_
             {
                 return static_cast<U &>(this)->CreateWindowObj( baseptr,
                                                                 win,
+                                                                localCapacityCount,
                                                                 comm,
                                                                 globalsize,
                                                                 localhalosize,
@@ -70,6 +69,7 @@ namespace _MYNAMESPACE_
 
             int CreateWindowObj( pointer &baseptr,
                                  MPI_Win &win,
+                                 size_t  &localCapacityCount,
                                  Environment::CommPtr comm,
                                  const size_t globalsize,
                                  const size_t localhalosize,
