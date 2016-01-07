@@ -1,4 +1,4 @@
-#ifndef COMMUNICATOR_H
+﻿#ifndef COMMUNICATOR_H
 #define COMMUNICATOR_H
 
 #include "../SharedLibraryDefine.h"
@@ -13,7 +13,7 @@
 #include <thread>
 #include <functional>
 #include "Environment.h"
-//#include "WindowObject.h"
+#include "DataTypes.h"
 
 namespace _MYNAMESPACE_
 {
