@@ -98,7 +98,7 @@ namespace _MYNAMESPACE_
 
 
         template < class Policy >
-        typename Policy::value_type ValArray<Policy>::sum()
+        typename ValArray<Policy>::value_type ValArray<Policy>::sum()
         {
             typename Policy::value_type val = 0.0;
             for( auto ii = 0UL; ii < this->GetLocalSize(); ii++ )

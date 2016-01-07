@@ -46,6 +46,10 @@ int main(int argc, char *argv[])
 
     qDebug() << array1[ 20 ] << array1[ 80 ] << sum;
 
+    auto localarray = array1.GetLocalValArray();
+
+     qDebug() << localarray[ 20 ] << localarray.sum();
+
     return 0;
 }
 

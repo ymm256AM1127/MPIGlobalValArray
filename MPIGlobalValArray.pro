@@ -82,5 +82,6 @@ HEADERS += \
     test/Test.h \
     include/MPI/ValArray.h \
     include/MPI/ExpressionTemplate.h \
-    include/MPI/detail/ValArrayImpl.h
+    include/MPI/detail/ValArrayImpl.h \
+    include/MPI/LocalValArray.h
 

@@ -3,6 +3,7 @@
 
 #include "WindowObject.h"
 #include "ExpressionTemplate.h"
+#include "LocalValArray.h"
 
 namespace _MYNAMESPACE_
 {
@@ -12,7 +13,7 @@ namespace _MYNAMESPACE_
         class ValArray : public Policy
         {
         public:
-            using value_type     = typename std::enable_if< MPL::is_pod< typename Policy::value_type >::value, typename Policy::value_type >::type;
+            using value_type     = typename std::enable_if< MPL::is_pod_with_complex< typename Policy::value_type >::value, typename Policy::value_type >::type;
             using pointer        = value_type*;
             using CommPtr        = Environment::CommPtr;
 
@@ -35,7 +36,12 @@ namespace _MYNAMESPACE_
             ValArray&           operator*=( const ValArray& rhs );
             ValArray&           operator/=( const ValArray& rhs );
 
-            typename Policy::value_type                   sum() ;
+            value_type          sum() ;
+
+            LocalValArray< value_type > GetLocalValArray()
+            {
+                return std::move( LocalValArray< value_type >( this->GetBasePtr(), this->GetLocalSize(), this->GetLocalHaloSize() ) );
+            }
 
             template < class L, class R >
             friend val_expression< BinaryOp2< PowExpression< typename Policy::value_type >, L, R > > Pow ( const L& l, const R& r )
