@@ -10,6 +10,7 @@
 #include "ErrorCode.h"
 #include <iostream>
 #include "Environment.h"
+#include "DataTypes.h"
 #include "WindowObjAllocator.h"
 
 namespace _MYNAMESPACE_
@@ -25,7 +26,7 @@ namespace _MYNAMESPACE_
         class WindowObject : protected Base<T>
         {
         public:
-            using value_type     = typename std::enable_if< MPL::is_pod< T >::value, T >::type;
+            using value_type     = typename std::enable_if< MPL::is_pod_with_complex< T >::value, T >::type;
             using pointer        = value_type*;
             using CommPtr        = Environment::CommPtr;
             using allocator_type = Allocator;

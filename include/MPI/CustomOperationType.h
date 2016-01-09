@@ -23,13 +23,13 @@ namespace _MYNAMESPACE_
         _MPI_OP_TYPE_SETTER_( COMPLEX_DOUBLE_SUM, MPI_COMPLEX_DOUBLE_SUM )
 
         template <>
-        inline MPI_Op MPIOpType< std::complex<float>, COMPLEX_FLOAT_SUM >()
+        inline MPI_Op MPIOpType< std::complex<float>, SUM >()
         {
             return MPIOPERATIONTYPE<COMPLEX_FLOAT_SUM>();
         }
 
         template <>
-        inline MPI_Op MPIOpType< std::complex<double>, COMPLEX_DOUBLE_SUM >()
+        inline MPI_Op MPIOpType< std::complex<double>, SUM >()
         {
             return MPIOPERATIONTYPE<COMPLEX_DOUBLE_SUM>();
         }

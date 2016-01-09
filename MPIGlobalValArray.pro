@@ -80,9 +80,12 @@ HEADERS += \
     include/MPI/WindowObjAllocator.h \
     include/MPI/detail/WindowObjAllocatorImpl.h \
     test/Test.h \
-    include/MPI/ValArray.h \
     include/MPI/ExpressionTemplate.h \
-    include/MPI/detail/ValArrayImpl.h \
     include/MPI/LocalValArray.h \
-    include/MPI/DataTypes.h
+    include/MPI/DataTypes.h \
+    include/MPI/detail/LocalValArrayImpl.h \
+    include/MPL/has_member_function.h \
+    include/MPI/GlobalValArray.h \
+    include/MPI/detail/GlobalValArrayImpl.h \
+    include/MPI/ExpressionTemplateForGlobalValArray.h
 

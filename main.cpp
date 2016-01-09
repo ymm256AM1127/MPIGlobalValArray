@@ -7,7 +7,14 @@
 
 #include "test/Test.h"
 
-#include "include/MPI/ValArray.h"
+#include "include/MPI/GlobalValArray.h"
+
+QDebug operator<<(QDebug dbg, const std::complex<double> &c)
+{
+    dbg.nospace() << "(" << c.real() << ", " << c.imag() << ")";
+
+    return dbg.space();
+}
 
 using namespace MyMPI::MPI;
 
@@ -15,16 +22,42 @@ int main(int argc, char *argv[])
 {
     //! MPIの初期化
     MPIEnvPtr->Init( argc, argv );
+    //! コミュニケータの取得
     auto comm = MPIEnvPtr->CreateCommunicator( MPI_COMM_WORLD );
 
-//    P2PTest( comm );
-//    BcastTest( comm );
-//    CorrectiveTest( comm );
-//    CorrectiveAllTest( comm );
+    //! GlobalValArrayのインスタンスを作成。
+    GlobalValArray< WindowObject< std::complex< double > > > array1( comm, 10000, 0 );
 
-//    WindowObjectTest( comm );
+    //! 各ランクのローカル配列のサイズを確認
+    qDebug() << "Rank " << comm->GetMPIRank() << " : " << array1.GetLocalSize();
 
-    ValArray< WindowObject< double > > array1( comm, 100, 0 );
+    //! 標準出力のための同期
+    comm->Barrier();
+
+    std::complex< double > CorrectVal( 100.0, -100.0 );
+    //! Rank0がRnak1のメモリ領域に書き込む
+    //! 片方通信となる
+    if( comm->GetMPIRank() == 0 )
+    {
+        auto localsize = array1.GetLocalSize();
+        auto val       = CorrectVal;
+        qDebug() << "Rank " << comm->GetMPIRank() << " wrties " << val << " to " << "Rank " << comm->GetMPIRank() + 1 << ".";
+        array1[ localsize + 10 ] = val;
+    }
+
+    //! 標準出力のための同期
+    comm->Barrier();
+
+    if( comm->GetMPIRank() == 1 )
+    {
+        auto localsize = array1.GetLocalSize();
+        qDebug() << "Rank " << comm->GetMPIRank() << " reads " << array1[ localsize + 10 ] << " from " << "Rank " << comm->GetMPIRank() + 1 << ".";
+    }
+
+//    //! 標準出力のための同期
+    comm->Barrier();
+
+    //! array1のディープコピーをそれぞれ作成。
     auto array2 = array1;
     auto array3 = array1;
 
@@ -46,9 +79,10 @@ int main(int argc, char *argv[])
 
     qDebug() << array1[ 20 ] << array1[ 80 ] << sum;
 
+    comm->Barrier();
     auto localarray = array1.GetLocalValArray();
 
-     qDebug() << localarray[ 20 ] << localarray.sum();
+    qDebug() << localarray[ 20 ] << localarray.sum();
 
     return 0;
 }

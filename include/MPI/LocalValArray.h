@@ -3,8 +3,8 @@
 
 #include <sstream>
 #include <vector>
-#include "../MPL/is_pod.h"
-#include "../MPL/ZeroValue.h"
+#include "../MPL/meta_function.h"
+#include "ExpressionTemplate.h"
 
 std::vector<double> temp;
 
@@ -19,6 +19,7 @@ namespace _MYNAMESPACE_
             using value_type = typename std::enable_if< MPL::is_pod_with_complex< T >::value, T >::type;
             using pointer    = value_type*;
             using reference  = value_type&;
+            using const_reference = const value_type&;
             using size_t     = std::size_t;
 
             explicit LocalValArray( pointer baseptr, const size_t localSize, const size_t HaloSize = 0 );
@@ -55,14 +56,46 @@ namespace _MYNAMESPACE_
                 return *this;
             }
 
+            template< class expression >
+            LocalValArray&      operator=( const expression& rhs );
+
             reference           operator []( const size_t index );
-            const reference     operator []( const size_t index ) const;
+            const_reference     operator []( const size_t index ) const;
             const value_type    at( const size_t index ) const;
 
-            const size_t        size() const;
-            const size_t        halo_size() const;
+            size_t              size() const;
+            size_t              halo_size() const;
 
             const value_type    sum() const;
+
+            LocalValArray&      operator +=( const LocalValArray& rhs );
+            LocalValArray&      operator -=( const LocalValArray& rhs );
+            LocalValArray&      operator *=( const LocalValArray& rhs );
+            LocalValArray&      operator /=( const LocalValArray& rhs );
+
+            REGIST_VAL_EXPRESSION_BINARY2( VAL_EXPRESSION, BinaryOp2, Pow )
+            REGIST_VAL_EXPRESSION_BINARY2( VAL_EXPRESSION, BinaryOp2, ATan2 )
+
+            REGIST_VAL_EXPRESSION_BINARY( VAL_EXPRESSION, BinaryOp, Add, + )
+            REGIST_VAL_EXPRESSION_BINARY( VAL_EXPRESSION, BinaryOp, Sub, - )
+            REGIST_VAL_EXPRESSION_BINARY( VAL_EXPRESSION, BinaryOp, Mul, * )
+            REGIST_VAL_EXPRESSION_BINARY( VAL_EXPRESSION, BinaryOp, Div, / )
+
+            REGIST_VAL_EXPRESSION_UNARY( VAL_EXPRESSION, UnaryOp, Abs )
+            REGIST_VAL_EXPRESSION_UNARY( VAL_EXPRESSION, UnaryOp, Sin )
+            REGIST_VAL_EXPRESSION_UNARY( VAL_EXPRESSION, UnaryOp, Cos )
+            REGIST_VAL_EXPRESSION_UNARY( VAL_EXPRESSION, UnaryOp, Tan )
+            REGIST_VAL_EXPRESSION_UNARY( VAL_EXPRESSION, UnaryOp, Sinh )
+            REGIST_VAL_EXPRESSION_UNARY( VAL_EXPRESSION, UnaryOp, Cosh )
+            REGIST_VAL_EXPRESSION_UNARY( VAL_EXPRESSION, UnaryOp, Tanh )
+            REGIST_VAL_EXPRESSION_UNARY( VAL_EXPRESSION, UnaryOp, ASin )
+            REGIST_VAL_EXPRESSION_UNARY( VAL_EXPRESSION, UnaryOp, ACos )
+            REGIST_VAL_EXPRESSION_UNARY( VAL_EXPRESSION, UnaryOp, ATan )
+            REGIST_VAL_EXPRESSION_UNARY( VAL_EXPRESSION, UnaryOp, Log )
+            REGIST_VAL_EXPRESSION_UNARY( VAL_EXPRESSION, UnaryOp, Log2 )
+            REGIST_VAL_EXPRESSION_UNARY( VAL_EXPRESSION, UnaryOp, Log10 )
+            REGIST_VAL_EXPRESSION_UNARY( VAL_EXPRESSION, UnaryOp, Exp )
+            REGIST_VAL_EXPRESSION_UNARY( VAL_EXPRESSION, UnaryOp, Sqrt )
 
         private:
             pointer         m_BasePtr;
@@ -70,89 +103,9 @@ namespace _MYNAMESPACE_
             size_t          m_HaloSize;
         };
 
-        template < class T >
-        LocalValArray<T>::LocalValArray(LocalValArray::pointer baseptr,
-                                        const LocalValArray::size_t localSize,
-                                        const LocalValArray::size_t HaloSize)
-            : m_BasePtr( baseptr ), m_LocalSize( localSize ), m_HaloSize( HaloSize )
-        {
-
-        }
-
-        template < class T >
-        LocalValArray<T>::LocalValArray(const LocalValArray &rhs)
-            : m_BasePtr( rhs.data() ), m_LocalSize( rhs.m_LocalSize ), m_HaloSize( rhs.m_HaloSize )
-        {
-
-        }
-
-        template < class T >
-        LocalValArray<T>::LocalValArray( LocalValArray &&rhs)
-            : m_BasePtr( rhs.data() ), m_LocalSize( rhs.m_LocalSize ), m_HaloSize( rhs.m_HaloSize )
-        {
-            rhs.m_BasePtr   = nullptr;
-            rhs.m_LocalSize = 0;
-            rhs.m_HaloSize  = 0;
-        }
-
-        template < class T >
-        LocalValArray<T>::~LocalValArray()
-        {
-
-        }
-
-        template < class T >
-        typename LocalValArray<T>::pointer LocalValArray<T>::data()
-        {
-            return m_BasePtr;
-        }
-
-        template < class T >
-        typename LocalValArray<T>::reference LocalValArray<T>::operator [](const LocalValArray::size_t index)
-        {
-            return m_BasePtr[ index ];
-        }
-
-        template < class T >
-        const typename LocalValArray<T>::reference LocalValArray<T>::operator [](const LocalValArray::size_t index) const
-        {
-            return m_BasePtr[ index ];
-        }
-
-        template < class T >
-        const typename LocalValArray<T>::value_type LocalValArray<T>::at(const LocalValArray::size_t index) const
-        {
-            return m_BasePtr[ index ];
-        }
-
-        template < class T >
-        const typename LocalValArray<T>::size_t LocalValArray<T>::size() const
-        {
-            return m_LocalSize;
-        }
-
-        template < class T >
-        const typename LocalValArray<T>::size_t LocalValArray<T>::halo_size() const
-        {
-            return m_HaloSize;
-        }
-
-        template < class T >
-        const typename LocalValArray<T>::value_type LocalValArray<T>::sum() const
-        {
-            using type = typename LocalValArray<T>::value_type;
-            type val = MPL::ZeroType< type >();
-
-            for( auto ii = 0UL; ii < m_LocalSize; ii++ )
-            {
-                val += m_BasePtr[ii];
-            }
-            return static_cast< const type >( val );
-        }
-
-
-
     }
 }
 
 #endif // LOCALVALARRAY_H
+
+#include "detail/LocalValArrayImpl.h"

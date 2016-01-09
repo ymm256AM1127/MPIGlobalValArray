@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 #include "../../include/MPI/Communicator.h"
+#include "../../include/MPI/DataTypes.h"
 
 #define _MPI_MULTI_THREAD_ENABLE_
 
@@ -56,6 +57,12 @@ namespace _MYNAMESPACE_
                 Abort( NOTSUPPORTTHREADMULTIPLE );
             }
         #endif
+
+            //! カスタムDataTypeを登録する。
+            CustomDataTypeRegister();
+            //! カスタムオペレーションを登録する。
+            CustomOperationTypeRegister();
+
             int i32MPIRank = -1;
             int i32MPISize = -1;
             MPI_Comm_rank( MPI_COMM_WORLD, &i32MPIRank );
@@ -67,7 +74,6 @@ namespace _MYNAMESPACE_
             MPI_Get_processor_name( hostnametemp.data(), &i32Resultlength );
             m_strHostName = std::string( hostnametemp.data() , i32Resultlength );
             m_strHostName.shrink_to_fit();
-
 
             //! ノードマップ（ランクマップ）を作成する
             CreateGlobalNodeMap();

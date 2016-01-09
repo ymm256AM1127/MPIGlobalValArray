@@ -1,7 +1,12 @@
 ﻿#ifndef EXPRESSIONTEMPLATE_H
 #define EXPRESSIONTEMPLATE_H
 
+#include "../MPL/has_member_function.h"
+
+HAS_MEMBER_FUNCTION( LocalAt );
+
 #include <cmath>
+#include <type_traits>
 /*!
  * 式テンプレート
  * UnraryとBinaryの演算用評価クラスを定義することで、演算子や算術関数の遅延実行を実現する。
@@ -14,7 +19,6 @@ namespace _MYNAMESPACE_
         struct UnaryFunction
         {
             using argument_type = Arg;
-
         };
 
         template <class Arg1, class Arg2, class Result>
@@ -23,6 +27,17 @@ namespace _MYNAMESPACE_
             using first_argument_type  = Arg1;
             using second_argument_type = Arg2;
             using result_type   = Result;
+        };
+
+        struct valarray_global_tag{ static const int id = 0; };
+        struct valarray_local_tag { static const int id = 1; };
+
+        template< class T>
+        struct val_array_trais
+        {
+            typename std::conditional< has_member_function_LocalAt< T >::value,
+                                      valarray_global_tag,
+                                      valarray_local_tag >::type tag;
         };
 
         template <class Op, class Arg0 >
@@ -38,14 +53,9 @@ namespace _MYNAMESPACE_
             UnaryOp(const Op& op, const Arg0& a0)
                 : Operation( op ), Argument0( a0 ) {}
 
-            result_type LocalAt( const size_t index ) const
-            {
-                return Operation( Argument0.LocalAt( index ) );
-            }
-
             result_type operator[]( const size_t index) const
             {
-                return Operation ( Argument0.LocalAt( index ) );
+                return Operation ( Argument0[ index ] );
             }
         };
 
@@ -63,14 +73,9 @@ namespace _MYNAMESPACE_
             BinaryOp( const Op& op, const Arg0& a0, const Arg1& a1 )
                 : Operation( op ), Argument0( a0 ), Argument1( a1 ) {}
 
-            result_type LocalAt( const size_t index ) const
-            {
-                return Operation( Argument0.LocalAt( index ) , Argument1.LocalAt( index ) );
-            }
-
             value_type operator[]( const size_t index ) const
             {
-                return Operation( Argument0.LocalAt( index ) , Argument1.LocalAt( index ) );
+                return Operation( Argument0[ index ] , Argument1[ index ] );
             }
         };
 
@@ -92,20 +97,36 @@ namespace _MYNAMESPACE_
             BinaryOp2( const Op& op, const Arg0& a0, const Arg1& a1 )
                 : Operation( op ), Argument0( a0 ), Argument1( a1 ) {}
 
-            result_type LocalAt( const size_t index ) const
-            {
-                return Operation( Argument0.LocalAt( index ) , Argument1 );
-            }
-
             value_type operator[]( const size_t index ) const
             {
-                return Operation( Argument0.LocalAt( index ) , Argument1 );
+                return Operation( Argument0[ index ] , Argument1 );
             }
         };
 
+        #define REGIST_VAL_EXPRESSION_UNARY( expression, funcBinder, type ) template < class R > \
+        friend expression< funcBinder< type##Expression< value_type >, R > > type ( const R& r ) \
+        { \
+            using Op = funcBinder< type##Expression< value_type >, R >; \
+            return expression< Op >( Op( type##Expression< value_type >() , r ) ); \
+        } \
+
+        #define  REGIST_VAL_EXPRESSION_BINARY( expression, funcBinder, operation, mark ) template < class L, class R > \
+        friend expression< funcBinder < operation##Expression< value_type >, L, R > > operator mark ( const L& l, const R& r ) \
+        {\
+            using Op = funcBinder < operation##Expression < value_type >, L, R >;\
+            return expression< Op >( Op( operation##Expression < value_type >() , l, r ) );\
+        }\
+
+        #define  REGIST_VAL_EXPRESSION_BINARY2( expression, funcBinder, operation ) template < class L, class R > \
+        friend expression < funcBinder < operation##Expression< value_type >, L, R > > operation ( const L& l, const R& r ) \
+        {\
+            using Op = funcBinder < operation##Expression < value_type >, L, R >;\
+            return expression < Op >( Op( operation##Expression < value_type >() , l, r ) );\
+        }\
+
 
         template< class Op >
-        class val_expression
+        class VAL_EXPRESSION
         {
             typedef typename std::remove_reference< Op >::type  RmExpr;
 
@@ -113,17 +134,13 @@ namespace _MYNAMESPACE_
         public:
             using value_type  = typename RmExpr::value_type;
             using result_type = typename RmExpr::result_type;
+            using size_t      = size_t;
 
-            explicit val_expression( const RmExpr& e ) : expr( e ) {}
-
-            result_type LocalAt( const size_t index ) const
-            {
-                return expr.LocalAt( index );
-            }
+            explicit VAL_EXPRESSION( const RmExpr& e ) : expr( e ) {}
 
             result_type operator[]( const size_t index ) const
             {
-                return expr.LocalAt( index );
+                return expr[ index ];
             }
         };
 
@@ -196,7 +213,6 @@ namespace _MYNAMESPACE_
         REGIST_UNARY_OP_TYPE( Log2, std::log2 );
         REGIST_UNARY_OP_TYPE( Exp, std::exp );
         REGIST_UNARY_OP_TYPE( Sqrt, std::sqrt );
-
     }
 }
 

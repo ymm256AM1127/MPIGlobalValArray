@@ -1,7 +1,7 @@
-﻿#ifndef VALARRAYIMPL_H
-#define VALARRAYIMPL_H
+﻿#ifndef GLOBALVALARRAYIMPL_H
+#define GLOBALVALARRAYIMPL_H
 
-#include "../ValArray.h"
+#include "../GlobalValArray.h"
 #include "../Communicator.h"
 
 namespace _MYNAMESPACE_
@@ -9,7 +9,7 @@ namespace _MYNAMESPACE_
     namespace MPI
     {
         template < class Policy >
-        ValArray<Policy>::ValArray( CommPtr comm,
+        GlobalValArray< Policy >::GlobalValArray( typename GlobalValArray< Policy >::CommPtr comm,
                                const std::size_t size,
                                const std::size_t localhalosize,
                                const std::string &windowobjectname ) :
@@ -19,20 +19,20 @@ namespace _MYNAMESPACE_
         }
 
         template < class Policy >
-        ValArray<Policy>::ValArray( const ValArray &rhs ) :
+        GlobalValArray<Policy>::GlobalValArray( const GlobalValArray &rhs ) :
             Policy( static_cast< const Policy >(rhs) )
         {
 
         }
 
         template < class Policy >
-        ValArray<Policy>& ValArray<Policy>::operator =(const ValArray<Policy> &rhs)
+        GlobalValArray<Policy>& GlobalValArray<Policy>::operator =(const GlobalValArray<Policy> &rhs)
         {
-            return static_cast< ValArray<Policy>& >( Policy::operator =( rhs ) );
+            return static_cast< GlobalValArray<Policy>& >( Policy::operator =( rhs ) );
         }
 
         template < class Policy >
-        ValArray<Policy>& ValArray<Policy>::operator+=( const ValArray &rhs )
+        GlobalValArray<Policy>& GlobalValArray<Policy>::operator+=( const GlobalValArray &rhs )
         {
             auto lhsptr = this->GetBasePtr();
             auto rhsptr = rhs.GetBasePtr();
@@ -45,7 +45,7 @@ namespace _MYNAMESPACE_
         }
 
         template < class Policy >
-        ValArray<Policy>& ValArray<Policy>::operator-=( const ValArray &rhs )
+        GlobalValArray<Policy>& GlobalValArray<Policy>::operator-=( const GlobalValArray &rhs )
         {
             auto lhsptr = this->GetBasePtr();
             auto rhsptr = rhs.GetBasePtr();
@@ -58,7 +58,7 @@ namespace _MYNAMESPACE_
         }
 
         template < class Policy >
-        ValArray<Policy>& ValArray<Policy>::operator*=( const ValArray &rhs )
+        GlobalValArray<Policy>& GlobalValArray<Policy>::operator*=( const GlobalValArray &rhs )
         {
             auto lhsptr = this->GetBasePtr();
             auto rhsptr = rhs.GetBasePtr();
@@ -71,7 +71,7 @@ namespace _MYNAMESPACE_
         }
 
         template < class Policy >
-        ValArray<Policy>& ValArray<Policy>::operator/=( const ValArray &rhs )
+        GlobalValArray<Policy>& GlobalValArray<Policy>::operator/=( const GlobalValArray &rhs )
         {
             auto lhsptr = this->GetBasePtr();
             auto rhsptr = rhs.GetBasePtr();
@@ -85,7 +85,7 @@ namespace _MYNAMESPACE_
 
         template < class Policy >
         template< class expression >
-        ValArray<Policy>& ValArray<Policy>::operator=( const expression& rhs )
+        GlobalValArray<Policy>& GlobalValArray<Policy>::operator=( const expression& rhs )
         {
             auto lhsptr = this->GetBasePtr();
             for( auto ii = 0UL; ii < this->GetLocalSize(); ii++ )
@@ -98,7 +98,7 @@ namespace _MYNAMESPACE_
 
 
         template < class Policy >
-        typename ValArray<Policy>::value_type ValArray<Policy>::sum()
+        typename GlobalValArray<Policy>::value_type GlobalValArray<Policy>::sum()
         {
             typename Policy::value_type val = 0.0;
             for( auto ii = 0UL; ii < this->GetLocalSize(); ii++ )
@@ -108,10 +108,13 @@ namespace _MYNAMESPACE_
             CommPtr Comm = this->GetCommPtr();
             Comm->Barrier();
             typename Policy::value_type out = 0.0;
-            Comm->Allreduce<typename Policy::value_type>( val, out, MPI_SUM, 1 );
+            Comm->Allreduce<typename Policy::value_type>( val,
+                                                          out,
+                                                          MPIOpType<typename Policy::value_type, SUM >(),
+                                                          1 );
             return out;
         }
     }
 }
 
-#endif // VALARRAYIMPL_H
+#endif // GLOBALVALARRAYIMPL_H
