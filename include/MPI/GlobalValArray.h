@@ -37,7 +37,8 @@ namespace _MYNAMESPACE_
             GlobalValArray&           operator*=( const GlobalValArray& rhs );
             GlobalValArray&           operator/=( const GlobalValArray& rhs );
 
-            value_type                sum() ;
+            const value_type          sum() const ;
+            const value_type          inner_product( const GlobalValArray& rhs ) const ;
 
             LocalValArray< value_type > GetLocalValArray()
             {

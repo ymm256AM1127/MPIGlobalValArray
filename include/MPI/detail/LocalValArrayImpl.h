@@ -7,6 +7,19 @@ namespace _MYNAMESPACE_
 {
     namespace MPI
     {
+        using namespace Utility;
+        template < typename T >
+        ForwardAccessIterator<T> LocalValArray<T>::begin()
+        {
+            return ForwardAccessIterator<T>( m_BasePtr, 0, m_LocalSize );
+        }
+
+        template < typename T >
+        ForwardAccessIterator<T> LocalValArray<T>::end()
+        {
+            return ForwardAccessIterator<T>( );
+        }
+
         template < class T >
         LocalValArray<T>::LocalValArray(LocalValArray::pointer baseptr,
                                         const LocalValArray::size_t localSize,

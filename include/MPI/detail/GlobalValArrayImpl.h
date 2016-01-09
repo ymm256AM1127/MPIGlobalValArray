@@ -98,9 +98,10 @@ namespace _MYNAMESPACE_
 
 
         template < class Policy >
-        typename GlobalValArray<Policy>::value_type GlobalValArray<Policy>::sum()
+        const typename GlobalValArray<Policy>::value_type GlobalValArray<Policy>::sum() const
         {
-            typename Policy::value_type val = 0.0;
+            using result_type = typename Policy::value_type;
+            result_type val = 0.0;
             for( auto ii = 0UL; ii < this->GetLocalSize(); ii++ )
             {
                 val += this->GetBasePtr()[ii];
@@ -112,7 +113,28 @@ namespace _MYNAMESPACE_
                                                           out,
                                                           MPIOpType<typename Policy::value_type, SUM >(),
                                                           1 );
-            return out;
+            return static_cast< const result_type >(out);
+        }
+
+        template < class Policy >
+        const typename GlobalValArray<Policy>::value_type GlobalValArray<Policy>::inner_product( const GlobalValArray& rhs ) const
+        {
+            using result_type = typename Policy::value_type;
+            result_type val = ZEROVALUE<result_type>();
+            const auto lhsptr = this->GetBasePtr();
+            const auto rhsptr = rhs.GetBasePtr();
+            for( auto ii = 0UL; ii < this->GetLocalSize(); ii++ )
+            {
+                val += lhsptr[ii] * rhsptr[ii];
+            }
+            CommPtr Comm = this->GetCommPtr();
+            Comm->Barrier();
+            typename Policy::value_type out = 0.0;
+            Comm->Allreduce<typename Policy::value_type>( val,
+                                                          out,
+                                                          MPIOpType<typename Policy::value_type, SUM >(),
+                                                          1 );
+            return static_cast< const result_type >(out);
         }
     }
 }

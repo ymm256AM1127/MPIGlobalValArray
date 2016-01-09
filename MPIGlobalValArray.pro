@@ -87,5 +87,7 @@ HEADERS += \
     include/MPL/has_member_function.h \
     include/MPI/GlobalValArray.h \
     include/MPI/detail/GlobalValArrayImpl.h \
-    include/MPI/ExpressionTemplateForGlobalValArray.h
+    include/MPI/ExpressionTemplateForGlobalValArray.h \
+    include/Utility/ForwardAccessIterator.h \
+    include/Utility/ForwardAccessIteratorImpl.h
 

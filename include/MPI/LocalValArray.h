@@ -5,22 +5,29 @@
 #include <vector>
 #include "../MPL/meta_function.h"
 #include "ExpressionTemplate.h"
+#include "../Utility/ForwardAccessIterator.h"
 
-std::vector<double> temp;
 
 namespace _MYNAMESPACE_
 {
     namespace MPI
     {
+        using namespace Utility;
         template < class T >
         class LocalValArray
         {
+            friend class ForwardAccessIterator<T>;
         public:
             using value_type = typename std::enable_if< MPL::is_pod_with_complex< T >::value, T >::type;
             using pointer    = value_type*;
+            using const_pointer    = const pointer;
             using reference  = value_type&;
             using const_reference = const value_type&;
             using size_t     = std::size_t;
+            using iterator   =  ForwardAccessIterator<T>;
+
+            iterator            begin();
+            iterator            end();
 
             explicit LocalValArray( pointer baseptr, const size_t localSize, const size_t HaloSize = 0 );
             LocalValArray( const LocalValArray& rhs );
@@ -28,6 +35,7 @@ namespace _MYNAMESPACE_
 
             ~LocalValArray();
 
+            const_pointer       data() const;
             pointer             data();
 
             LocalValArray&      operator =( const LocalValArray& rhs )
@@ -67,6 +75,7 @@ namespace _MYNAMESPACE_
             size_t              halo_size() const;
 
             const value_type    sum() const;
+            const value_type    innter_product( const LocalValArray& rhs ) const;
 
             LocalValArray&      operator +=( const LocalValArray& rhs );
             LocalValArray&      operator -=( const LocalValArray& rhs );
@@ -102,6 +111,28 @@ namespace _MYNAMESPACE_
             size_t          m_LocalSize;
             size_t          m_HaloSize;
         };
+
+        template < class T >
+        const typename LocalValArray<T>::value_type LocalValArray<T>::innter_product( const LocalValArray<T>& rhs ) const
+        {
+            using type = typename LocalValArray<T>::value_type;
+            type val = MPL::ZeroType< type >();
+
+            const auto lhsptr = this->data();
+            const auto rhsptr = rhs.data();
+
+            for( auto ii = 0UL; ii < m_LocalSize; ii++ )
+            {
+                val += lhsptr[ii] * rhsptr[ii];
+            }
+            return static_cast< const type >( val );
+        }
+
+        template < class T >
+        typename LocalValArray<T>::const_pointer LocalValArray<T>::data() const
+        {
+            return static_cast< LocalValArray<T>::const_pointer >(m_BasePtr);
+        }
 
     }
 }

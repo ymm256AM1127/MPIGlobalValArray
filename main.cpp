@@ -77,12 +77,14 @@ int main(int argc, char *argv[])
 
     auto sum = array1.sum();
 
-    qDebug() << array1[ 20 ] << array1[ 80 ] << sum;
+    qDebug() << array1[ 20 ] << array1[ 80 ] << sum << array1.inner_product( array2 );
 
     comm->Barrier();
     auto localarray = array1.GetLocalValArray();
+    auto localarray1 = array2.GetLocalValArray();
 
-    qDebug() << localarray[ 20 ] << localarray.sum();
+    qDebug() << localarray[ 20 ] << localarray.sum() << localarray.innter_product( localarray1 );
+
 
     return 0;
 }
