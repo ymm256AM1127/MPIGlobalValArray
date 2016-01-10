@@ -1,4 +1,4 @@
-#include "Test.h"
+﻿#include "Test.h"
 
 #include "../include/MPI/WindowObject.h"
 #include <QDebug>

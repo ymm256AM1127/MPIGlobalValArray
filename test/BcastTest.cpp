@@ -1,4 +1,4 @@
-#include "Test.h"
+﻿#include "Test.h"
 
 int BcastTest( _MYNAMESPACE_::MPI::Environment::CommPtr &comm )
 {

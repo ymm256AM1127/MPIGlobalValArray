@@ -26,16 +26,19 @@ namespace _MYNAMESPACE_
         class WindowObject : protected Base<T>
         {
         public:
-            using value_type     = typename std::enable_if< MPL::is_pod_with_complex< T >::value, T >::type;
-            using pointer        = value_type*;
-            using CommPtr        = Environment::CommPtr;
-            using allocator_type = Allocator;
-            using size_t         = std::size_t;
+            using value_type      = typename std::enable_if< MPL::is_pod_with_complex< T >::value, T >::type;
+            using pointer         = value_type*;
+            using const_pointer   = const value_type*;
+            using reference       = value_type&;
+            using const_reference = const value_type&;
+            using CommPtr         = Environment::CommPtr;
+            using allocator_type  = Allocator;
+            using size_t          = std::size_t;
 
             WindowObject();
             explicit WindowObject( CommPtr comm,
-                                   const std::size_t size,
-                                   const std::size_t localhalosize = 0,
+                                   const size_t size,
+                                   const size_t localhalosize = 0,
                                    const std::string&  windowobjectname = std::string() );
 
             WindowObject( const WindowObject& rhs );
@@ -43,7 +46,7 @@ namespace _MYNAMESPACE_
             ~WindowObject();
 
             WindowObject&   operator=( const WindowObject& rhs );
-            WindowObject&   operator=( const value_type& val );
+            WindowObject&   operator=( const T& val );
 
             std::function< void() >     Deletor;
 
@@ -60,29 +63,29 @@ namespace _MYNAMESPACE_
             //! ======================================================================= Acctive Target
 
             //! Basic Operation =====================================================================
-            value_type      Read ( const std::size_t index ) const;
-            void            Write( const value_type& value, const std::size_t index );
-            void            Read ( T* baseptr,
-                                   const std::size_t startindex,
-                                   const std::size_t count );
-            void            Write( const T* baseptr,
-                                   const std::size_t startindex,
-                                   const std::size_t count );
-            const value_type at( const std::size_t index ) const;
+            value_type      Read ( const size_t index ) const;
+            void            Write( const T& value, const size_t index );
+            void            Read ( pointer baseptr,
+                                   const size_t startindex,
+                                   const size_t count );
+            void            Write( const_pointer baseptr,
+                                   const size_t startindex,
+                                   const size_t count );
+            const value_type at( const size_t index ) const;
             operator T () const;
-            const WindowObject& operator[]( const std::size_t index ) const;
-            WindowObject&   operator []( const std::size_t index );
+            const WindowObject& operator[]( const size_t index ) const;
+            WindowObject&   operator []( const size_t index );
 
-            const value_type LocalAt( const std::size_t index ) const;
+            const value_type LocalAt( const size_t index ) const;
 
             //! ===================================================================== Basic Operation
 
             //! Getter Property =====================================================================
             pointer         GetBasePtr() const;
-            std::size_t     GetGlobalSize() const;
-            std::size_t     GetLocalSize() const;
-            std::size_t     GetLocalHaloSize() const;
-            std::size_t     GetDisplacementUnitSize() const;
+            size_t          GetGlobalSize() const;
+            size_t          GetLocalSize() const;
+            size_t          GetLocalHaloSize() const;
+            size_t          GetDisplacementUnitSize() const;
             std::string     GetWindowObjName() const;
             CommPtr         GetCommPtr() const;
             //! ===================================================================== Getter Property
@@ -106,26 +109,27 @@ namespace _MYNAMESPACE_
 
             std::size_t             m_CurrentIndex;
 
-            inline void     Put( const value_type* baseptr,
-                                 const std::size_t offsetfrombaseptr,
-                                 const std::size_t count,
+            inline void     Put( const_pointer baseptr,
+                                 const size_t offsetfrombaseptr,
+                                 const size_t count,
                                  const int targetRank ) const;
-            inline void     Get( value_type* baseptr,
-                                 const std::size_t offsetfrombaseptr,
-                                 const std::size_t count,
+            inline void     Get( pointer baseptr,
+                                 const size_t offsetfrombaseptr,
+                                 const size_t count,
                                  const int targetRank ) const;
-            inline void     Acc( value_type* baseptr,
-                                 const std::size_t offsetfrombaseptr,
-                                 const std::size_t count,
+            inline void     Acc( pointer baseptr,
+                                 const size_t offsetfrombaseptr,
+                                 const size_t count,
                                  const int targetRank,
                                  const MPI_Op Op ) const;
 
             //! アドレスを取得できないようにする。
+            //!
             void            operator &() const{}
 
             void            CreateObject( CommPtr comm,
-                                          const std::size_t size,
-                                          const std::size_t localhalosize,
+                                          const size_t size,
+                                          const size_t localhalosize,
                                           const std::string&  windowobjectname = std::string() );
 
         };

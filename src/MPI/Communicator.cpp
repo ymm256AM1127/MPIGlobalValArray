@@ -1,4 +1,4 @@
-#include "../../include/MPI/Communicator.h"
+﻿#include "../../include/MPI/Communicator.h"
 #include "../../include/Utility/ScopedMutex.h"
 #include <QDebug>
 
@@ -96,7 +96,9 @@ namespace _MYNAMESPACE_
             Utility::ScopedMutex<std::mutex> locker( &m_Mutex );
             if( !m_vectMPI_Requests.empty() )
             {
-                MPI_Waitall( m_vectMPI_Requests.size(), m_vectMPI_Requests.data(), MPI_STATUSES_IGNORE );
+                MPI_Waitall( static_cast<int>( m_vectMPI_Requests.size() ),
+                             m_vectMPI_Requests.data(),
+                             MPI_STATUSES_IGNORE );
                 std::vector< MPI_Request > newRequest;
                 m_vectMPI_Requests.swap( newRequest );
             }

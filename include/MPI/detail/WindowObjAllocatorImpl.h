@@ -29,6 +29,16 @@ namespace _MYNAMESPACE_
             Globalsize += rest;
             size_t LocalSize = Globalsize / MPISize64 + Localhalosize;
 
+#if MSMPI_VER <= 0x100
+
+            auto ret = MPI_Alloc_mem ( LocalSize * sizeof( T ), MPI_INFO_NULL, &baseptr );
+            ret      = MPI_Win_create( baseptr, LocalSize * sizeof( T ),
+                                       sizeof( T ),
+                                       MPI_INFO_NULL,
+                                       comm->GetCommunicator(),
+                                       &win );
+#else
+
             auto ret = MPI_Win_allocate( LocalSize * sizeof( T ),
                                          sizeof( T ),
                                          MPI_INFO_NULL,
@@ -36,6 +46,7 @@ namespace _MYNAMESPACE_
                                          &baseptr,
                                          &win );
 
+#endif
             localCapacityCount = LocalSize;
 
             if( MPI_SUCCESS != ret )
@@ -58,6 +69,8 @@ namespace _MYNAMESPACE_
             //! 前で開放する必要はない。
             MPI_Win_free( &win );
             win = MPI_WIN_NULL;
+
+
             return ret;
         }
     }

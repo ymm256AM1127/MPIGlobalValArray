@@ -1,4 +1,4 @@
-#ifndef COLLECTIVETESTGATHER_CPP
+﻿#ifndef COLLECTIVETESTGATHER_CPP
 #define COLLECTIVETESTGATHER_CPP
 
 #include "Test.h"
@@ -49,6 +49,5 @@ int CorrectiveTest( _MYNAMESPACE_::MPI::Environment::CommPtr &comm )
 
     return 0;
 }
-
 
 #endif // COLLECTIVETESTGATHER_CPP

@@ -7,6 +7,8 @@ CONFIG -= app_bundle
 
 TEMPLATE = app
 
+include( MPIGlobalValArray.pri )
+
 SOURCES += main.cpp \
     src/MPI/Environment.cpp \
     src/MPI/Communicator.cpp \
@@ -17,33 +19,6 @@ SOURCES += main.cpp \
     test/CollectiveTest.cpp \
     test/CorrectiveAllTest.cpp \
     test/WindowObjectTest.cpp
-
-
-win32{
-    MPIPATH = "C:/Program Files (x86)/Microsoft SDKs/MPI"
-    MPILIB = $$MPIPATH/Lib/x64
-    MPIINC = $$MPIPATH/Include
-    LIBS += -L$$MPILIB -lmsmpi
-}
-
-macx:!unix{
-    MPIPATH = /opt/mpi
-    MPILIB = $$MPIPATH/lib
-    MPIINC = $$MPIPATH/include
-    LIBS += -L$$MPILIB -lmpi
-}
-
-unix{
-    MPIPATH = /opt/mpi
-    MPILIB = $$MPIPATH/lib
-    MPIINC = $$MPIPATH/include
-    LIBS += -L$$MPILIB -lmpi
-}
-
-
-
-INCLUDEPATH += $$MPIINC
-DEPENDPATH  += $$MPIINC
 
 HEADERS += \
     include/SharedLibraryDefine.h \

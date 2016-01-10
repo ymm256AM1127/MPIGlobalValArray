@@ -21,6 +21,8 @@ using namespace MyMPI::MPI;
 int main(int argc, char *argv[])
 {
     //! MPIの初期化
+    Environment env;
+//    env.Init( argc, argv );
     MPIEnvPtr->Init( argc, argv );
     //! コミュニケータの取得
     auto comm = MPIEnvPtr->CreateCommunicator( MPI_COMM_WORLD );
@@ -29,7 +31,7 @@ int main(int argc, char *argv[])
     GlobalValArray< WindowObject< std::complex< double > > > array1( comm, 10000, 0 );
 
     //! 各ランクのローカル配列のサイズを確認
-    qDebug() << "Rank " << comm->GetMPIRank() << " : " << array1.GetLocalSize();
+    std::cout << "Rank " << comm->GetMPIRank() << " : " << array1.GetLocalSize() << std::endl;
 
     //! 標準出力のための同期
     comm->Barrier();
@@ -41,7 +43,7 @@ int main(int argc, char *argv[])
     {
         auto localsize = array1.GetLocalSize();
         auto val       = CorrectVal;
-        qDebug() << "Rank " << comm->GetMPIRank() << " wrties " << val << " to " << "Rank " << comm->GetMPIRank() + 1 << ".";
+        std::cout << "Rank " << comm->GetMPIRank() << " wrties " << val << " to " << "Rank " << comm->GetMPIRank() + 1 << ".\n";
         array1[ localsize + 10 ] = val;
     }
 
@@ -51,7 +53,7 @@ int main(int argc, char *argv[])
     if( comm->GetMPIRank() == 1 )
     {
         auto localsize = array1.GetLocalSize();
-        qDebug() << "Rank " << comm->GetMPIRank() << " reads " << array1[ localsize + 10 ] << " from " << "Rank " << comm->GetMPIRank() + 1 << ".";
+        std::cout << "Rank " << comm->GetMPIRank() << " reads " << array1.at( localsize + 10 ) << " from " << "Rank " << comm->GetMPIRank() + 1 << ".\n";
     }
 
 //    //! 標準出力のための同期
@@ -77,15 +79,14 @@ int main(int argc, char *argv[])
 
     auto sum = array1.sum();
 
-    qDebug() << array1[ 20 ] << array1[ 80 ] << sum << array1.inner_product( array2 ) << array1.norm() << array1.norm2();
+    std::cout << array1.at( 20 ) << array1.at( 80 ) << sum << array1.inner_product( array2 ) << array1.norm() << array1.norm2() << std::endl;
 
     comm->Barrier();
     auto localarray = array1.GetLocalValArray();
     auto localarray1 = array2.GetLocalValArray();
 
-    qDebug() << localarray[ 20 ] << localarray.sum() << localarray.innter_product( localarray1 );
+    std::cout << localarray.at( 20 ) << localarray.sum() << localarray.innter_product( localarray1 ) << std::endl;
 
 
     return 0;
 }
-

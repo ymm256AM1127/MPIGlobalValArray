@@ -9,6 +9,7 @@
 #include <vector>
 #include "../../include/MPI/Communicator.h"
 #include "../../include/MPI/DataTypes.h"
+#include <QDebug>
 
 #define _MPI_MULTI_THREAD_ENABLE_
 

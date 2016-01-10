@@ -1,4 +1,4 @@
-#ifndef COLLECTIVECOMMSTLCONTAINERIMPL_H
+﻿#ifndef COLLECTIVECOMMSTLCONTAINERIMPL_H
 #define COLLECTIVECOMMSTLCONTAINERIMPL_H
 
 #include "../CollectiveCommSTLContainer.h"
@@ -30,7 +30,7 @@ namespace _MYNAMESPACE_
             //! size check
             if( itemCount == 0 )
             {
-                sendsize = dataBuffer.size();
+                sendsize = static_cast<int>( dataBuffer.size());
             }
             else if( static_cast<int>( dataBuffer.size() ) > itemCount )  //例外を投げておく。MPIは例外が出た時点で止まる。
             {
@@ -136,7 +136,7 @@ namespace _MYNAMESPACE_
 
             if( myrank == rootRank )
             {
-                sendsize = SendBuffer.size();
+                sendsize = static_cast< int >( SendBuffer.size() );
 
                 if( sendsize > 0 && ( ( sendsize % mpisize ) == 0 ) )
                 {
