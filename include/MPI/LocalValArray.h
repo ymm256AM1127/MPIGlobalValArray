@@ -111,29 +111,6 @@ namespace _MYNAMESPACE_
             size_t          m_LocalSize;
             size_t          m_HaloSize;
         };
-
-        template < class T >
-        const typename LocalValArray<T>::value_type LocalValArray<T>::innter_product( const LocalValArray<T>& rhs ) const
-        {
-            using type = typename LocalValArray<T>::value_type;
-            type val = MPL::ZeroType< type >();
-
-            const auto lhsptr = this->data();
-            const auto rhsptr = rhs.data();
-
-            for( auto ii = 0UL; ii < m_LocalSize; ii++ )
-            {
-                val += lhsptr[ii] * rhsptr[ii];
-            }
-            return static_cast< const type >( val );
-        }
-
-        template < class T >
-        typename LocalValArray<T>::const_pointer LocalValArray<T>::data() const
-        {
-            return static_cast< LocalValArray<T>::const_pointer >(m_BasePtr);
-        }
-
     }
 }
 

@@ -136,6 +136,47 @@ namespace _MYNAMESPACE_
                                                           1 );
             return static_cast< const result_type >(out);
         }
+
+        template < class Policy >
+        const typename GlobalValArray<Policy>::value_type GlobalValArray<Policy>::norm() const
+        {
+            using result_type = typename GlobalValArray<Policy>::value_type;
+            result_type   val = ZeroType<result_type>();
+
+            for( auto ii = 0UL; ii < this->GetLocalSize(); ii++ )
+            {
+                val += std::abs( this->GetBasePtr()[ii] );
+            }
+            CommPtr Comm = this->GetCommPtr();
+            Comm->Barrier();
+            result_type out = 0.0;
+            Comm->Allreduce< result_type >( val,
+                                            out,
+                                            MPIOpType< result_type, SUM >(),
+                                            1 );
+            return static_cast< const result_type >(out);
+        }
+
+        template < class Policy >
+        const typename GlobalValArray<Policy>::value_type GlobalValArray<Policy>::norm2() const
+        {
+            using result_type = typename GlobalValArray<Policy>::value_type;
+            result_type   val = ZeroType<result_type>();
+
+            for( auto ii = 0UL; ii < this->GetLocalSize(); ii++ )
+            {
+                val += ( this->GetBasePtr()[ii] * this->GetBasePtr()[ii] );
+            }
+
+            CommPtr Comm = this->GetCommPtr();
+            Comm->Barrier();
+            result_type out = 0.0;
+            Comm->Allreduce<result_type>( val,
+                                          out,
+                                          MPIOpType<result_type, SUM >(),
+                                          1 );
+            return static_cast< const result_type >(out);
+        }
     }
 }
 

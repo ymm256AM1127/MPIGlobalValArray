@@ -26,19 +26,23 @@ namespace _MYNAMESPACE_
                                const std::string&  windowobjectname = std::string() );
             GlobalValArray( const GlobalValArray& rhs );
 
-            GlobalValArray&           operator =( const GlobalValArray& rhs );
+            GlobalValArray&             operator =( const GlobalValArray& rhs );
             template< class expression >
-            GlobalValArray&           operator=( const expression& rhs );
+            GlobalValArray&             operator=( const expression& rhs );
 
             ~GlobalValArray(){}
 
-            GlobalValArray&           operator+=( const GlobalValArray& rhs );
-            GlobalValArray&           operator-=( const GlobalValArray& rhs );
-            GlobalValArray&           operator*=( const GlobalValArray& rhs );
-            GlobalValArray&           operator/=( const GlobalValArray& rhs );
+            GlobalValArray&             operator+=( const GlobalValArray& rhs );
+            GlobalValArray&             operator-=( const GlobalValArray& rhs );
+            GlobalValArray&             operator*=( const GlobalValArray& rhs );
+            GlobalValArray&             operator/=( const GlobalValArray& rhs );
 
-            const value_type          sum() const ;
-            const value_type          inner_product( const GlobalValArray& rhs ) const ;
+            const value_type            sum() const;
+            const value_type            norm() const;
+            const value_type            norm2() const;
+            const value_type            max() const;
+            const value_type            min() const;
+            const value_type            inner_product( const GlobalValArray& rhs ) const ;
 
             LocalValArray< value_type > GetLocalValArray()
             {
