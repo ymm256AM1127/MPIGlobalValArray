@@ -29,7 +29,8 @@ namespace _MYNAMESPACE_
             Globalsize += rest;
             size_t LocalSize = Globalsize / MPISize64 + Localhalosize;
 
-#if MSMPI_VER <= 0x100
+#ifdef MSMPI_VER
+    #if MSMPI_VER <= 0x100
 
             auto ret = MPI_Alloc_mem ( LocalSize * sizeof( T ), MPI_INFO_NULL, &baseptr );
             ret      = MPI_Win_create( baseptr, LocalSize * sizeof( T ),
@@ -37,6 +38,7 @@ namespace _MYNAMESPACE_
                                        MPI_INFO_NULL,
                                        comm->GetCommunicator(),
                                        &win );
+    #endif
 #else
 
             auto ret = MPI_Win_allocate( LocalSize * sizeof( T ),

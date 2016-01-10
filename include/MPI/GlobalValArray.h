@@ -5,7 +5,6 @@
 #include "LocalValArray.h"
 #include "ExpressionTemplateForGlobalValArray.h"
 
-
 namespace _MYNAMESPACE_
 {
     namespace MPI
@@ -82,3 +81,9 @@ namespace _MYNAMESPACE_
 #endif // GLOBALVALARRAY_H
 
 #include "detail/GlobalValArrayImpl.h"
+
+template < class T >
+using MPIValArray = _MYNAMESPACE_::MPI::GlobalValArray< _MYNAMESPACE_::MPI::WindowObject< T > > ;
+
+template < class T >
+using ValArray = _MYNAMESPACE_::MPI::LocalValArray< T > ;

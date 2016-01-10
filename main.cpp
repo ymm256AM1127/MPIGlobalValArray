@@ -28,8 +28,8 @@ int main(int argc, char *argv[])
     auto comm = MPIEnvPtr->CreateCommunicator( MPI_COMM_WORLD );
 
     //! GlobalValArrayのインスタンスを作成。
-    GlobalValArray< WindowObject< std::complex< double > > > array1( comm, 10000, 0 );
-
+//    GlobalValArray< WindowObject< std::complex< double > > > array1( comm, 10000, 0 );
+    MPIValArray< std::complex< double > > array1( comm, 10000, 0 );
     //! 各ランクのローカル配列のサイズを確認
     std::cout << "Rank " << comm->GetMPIRank() << " : " << array1.GetLocalSize() << std::endl;
 
