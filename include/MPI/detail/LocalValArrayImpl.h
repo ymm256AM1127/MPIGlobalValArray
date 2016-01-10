@@ -2,6 +2,7 @@
 #define LOCALVALARRAYIMPL_H
 
 #include "../LocalValArray.h"
+#include "../../Utility/MathHelper.h"
 
 namespace _MYNAMESPACE_
 {
@@ -88,6 +89,32 @@ namespace _MYNAMESPACE_
         }
 
         template < class T >
+        const typename LocalValArray<T>::value_type LocalValArray<T>::norm() const
+        {
+            using type = typename LocalValArray<T>::value_type;
+            type val = MPL::ZeroType< type >();
+
+            for( auto ii = 0UL; ii < m_LocalSize; ii++ )
+            {
+                val += std::abs( m_BasePtr[ii] );
+            }
+            return static_cast< const type >( val );
+        }
+
+        template < class T >
+        const typename LocalValArray<T>::value_type LocalValArray<T>::norm2() const
+        {
+            using type = typename LocalValArray<T>::value_type;
+            type val = MPL::ZeroType< type >();
+
+            for( auto ii = 0UL; ii < m_LocalSize; ii++ )
+            {
+                val += ( m_BasePtr[ii] * m_BasePtr[ii] );
+            }
+            return static_cast< const type >( val );
+        }
+
+        template < class T >
         const typename LocalValArray<T>::value_type LocalValArray<T>::sum() const
         {
             using type = typename LocalValArray<T>::value_type;
@@ -96,6 +123,38 @@ namespace _MYNAMESPACE_
             for( auto ii = 0UL; ii < m_LocalSize; ii++ )
             {
                 val += m_BasePtr[ii];
+            }
+            return static_cast< const type >( val );
+        }
+
+        template < class T >
+        const typename LocalValArray<T>::value_type LocalValArray<T>::min() const
+        {
+            using type = typename LocalValArray<T>::value_type;
+            type val = m_BasePtr[0];
+
+            for( auto ii = 1UL; ii < m_LocalSize; ii++ )
+            {
+                if( val > m_BasePtr[ii] )
+                {
+                    val = m_BasePtr[ii];
+                }
+            }
+            return static_cast< const type >( val );
+        }
+
+        template < class T >
+        const typename LocalValArray<T>::value_type LocalValArray<T>::max() const
+        {
+            using type = typename LocalValArray<T>::value_type;
+            type val = m_BasePtr[0];
+
+            for( auto ii = 0UL; ii < m_LocalSize; ii++ )
+            {
+                if( val < m_BasePtr[ii] )
+                {
+                    val = m_BasePtr[ii];
+                }
             }
             return static_cast< const type >( val );
         }

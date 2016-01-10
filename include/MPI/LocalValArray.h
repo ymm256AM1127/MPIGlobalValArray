@@ -75,6 +75,10 @@ namespace _MYNAMESPACE_
             size_t              halo_size() const;
 
             const value_type    sum() const;
+            const value_type    min() const;
+            const value_type    norm() const;
+            const value_type    norm2() const;
+            const value_type    max() const;
             const value_type    innter_product( const LocalValArray& rhs ) const;
 
             LocalValArray&      operator +=( const LocalValArray& rhs );

@@ -89,5 +89,6 @@ HEADERS += \
     include/MPI/detail/GlobalValArrayImpl.h \
     include/MPI/ExpressionTemplateForGlobalValArray.h \
     include/Utility/ForwardAccessIterator.h \
-    include/Utility/ForwardAccessIteratorImpl.h
+    include/Utility/ForwardAccessIteratorImpl.h \
+    include/Utility/MathHelper.h
 

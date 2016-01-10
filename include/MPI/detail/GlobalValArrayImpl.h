@@ -177,6 +177,52 @@ namespace _MYNAMESPACE_
                                           1 );
             return static_cast< const result_type >(out);
         }
+
+        template < class Policy >
+        const typename GlobalValArray<Policy>::value_type GlobalValArray<Policy>::min() const
+        {
+            using result_type    = typename GlobalValArray<Policy>::value_type;
+            result_type   minval = this->GetBasePtr()[0];
+
+            for( auto ii = 1UL; ii < this->GetLocalSize(); ii++ )
+            {
+               if( minval > this->GetBasePtr()[ii] )
+               {
+                   minval = this->GetBasePtr()[ii];
+               }
+            }
+            CommPtr Comm = this->GetCommPtr();
+            Comm->Barrier();
+            result_type out = 0.0;
+            Comm->Allreduce< result_type >( minval,
+                                            out,
+                                            MPIOpType< result_type, MIN >(),
+                                            1 );
+            return static_cast< const result_type >(out);
+        }
+
+        template < class Policy >
+        const typename GlobalValArray<Policy>::value_type GlobalValArray<Policy>::max() const
+        {
+            using result_type    = typename GlobalValArray<Policy>::value_type;
+            result_type   maxval = this->GetBasePtr()[0];
+
+            for( auto ii = 1UL; ii < this->GetLocalSize(); ii++ )
+            {
+               if( maxval < this->GetBasePtr()[ii] )
+               {
+                   maxval = this->GetBasePtr()[ii];
+               }
+            }
+            CommPtr Comm = this->GetCommPtr();
+            Comm->Barrier();
+            result_type out = 0.0;
+            Comm->Allreduce< result_type >( maxval,
+                                            out,
+                                            MPIOpType< result_type, MIN >(),
+                                            1 );
+            return static_cast< const result_type >(out);
+        }
     }
 }
 

@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
     auto localarray = array1.GetLocalValArray();
     auto localarray1 = array2.GetLocalValArray();
 
-    qDebug() << localarray[ 20 ] << localarray.sum() << localarray.innter_product( localarray1 );
+    qDebug() << localarray[ 20 ] << localarray.sum() << localarray.innter_product( localarray1 ) << localarray.norm() << localarray.norm2() << localarray.min() << localarray.max();
 
 
     return 0;
