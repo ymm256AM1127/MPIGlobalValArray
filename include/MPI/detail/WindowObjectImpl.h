@@ -30,8 +30,8 @@ namespace _MYNAMESPACE_
          * \param comm
          */
         WindowObject<T, Allocator>::WindowObject( CommPtr comm,
-                                                  const std::size_t size,
-                                                  const std::size_t localhalosize,
+                                                  const typename WindowObject<T, Allocator>::size_t size,
+                                                  const typename WindowObject<T, Allocator>::size_t localhalosize,
                                                   const std::string&  windowobjectname )
             : m_WindowObj( MPI_WIN_NULL ),
               m_Communicator( comm ),
@@ -74,8 +74,8 @@ namespace _MYNAMESPACE_
          * \param windowobjectname
          */
         void WindowObject<T, Allocator>::CreateObject( CommPtr comm,
-                                                       const std::size_t size,
-                                                       const std::size_t localhalosize,
+                                                       const typename WindowObject<T, Allocator>::size_t size,
+                                                       const typename WindowObject<T, Allocator>::size_t localhalosize,
                                                        const std::string &windowobjectname)
         {
             //! ここにアロケータを書く
@@ -107,7 +107,7 @@ namespace _MYNAMESPACE_
          * \param val
          * \return
          */
-        WindowObject<T, Allocator> &WindowObject<T, Allocator>::operator=(const typename WindowObject<T, Allocator>::value_type &val)
+        WindowObject<T, Allocator>& WindowObject<T, Allocator>::operator=( const T& val )
         {
             Write( val, m_CurrentIndex );
             return *this;
@@ -119,7 +119,7 @@ namespace _MYNAMESPACE_
          * \param rhs
          * \return
          */
-        WindowObject<T, Allocator> &WindowObject<T, Allocator>::operator=(const WindowObject<T, Allocator> &rhs)
+        WindowObject<T, Allocator>& WindowObject<T, Allocator>::operator=( const WindowObject<T, Allocator> &rhs )
         {
             if( m_WindowObj != MPI_WIN_NULL )
             {
@@ -251,45 +251,45 @@ namespace _MYNAMESPACE_
         }
 
         template < class T, class Allocator >
-        void WindowObject<T, Allocator>::Put( const value_type* baseptr,
-                                              const std::size_t offsetfrombasept,
-                                              const std::size_t count,
+        void WindowObject<T, Allocator>::Put( typename WindowObject<T, Allocator>::const_pointer baseptr,
+                                              const typename WindowObject<T, Allocator>::size_t offsetfrombasept,
+                                              const typename WindowObject<T, Allocator>::size_t count,
                                               const int targetRank ) const
         {
             this->LockExclusive( targetRank );
             MPI_Put( baseptr,
-                     count,
+                     static_cast< int >( count ),
                      MPIDATATYPE<T>(),
                      targetRank,
                      offsetfrombasept,
-                     count,
+                     static_cast< int >( count ),
                      MPIDATATYPE<T>(),
                      m_WindowObj );
             this->Unlock( targetRank );
         }
 
         template < class T, class Allocator >
-        void WindowObject<T, Allocator>::Get( value_type* baseptr,
-                                              const std::size_t offsetfrombasept,
-                                              const std::size_t count,
+        void WindowObject<T, Allocator>::Get( typename WindowObject<T, Allocator>::pointer baseptr,
+                                              const typename WindowObject<T, Allocator>::size_t offsetfrombasept,
+                                              const typename WindowObject<T, Allocator>::size_t count,
                                               const int targetRank ) const
         {
             this->LockShared( targetRank );
             MPI_Get( baseptr,
-                     count,
+                     static_cast< int >( count ),
                      MPIDATATYPE<T>(),
                      targetRank,
                      offsetfrombasept,
-                     count,
+                     static_cast< int >( count ),
                      MPIDATATYPE<T>(),
                      m_WindowObj );
             this->Unlock( targetRank );
         }
 
         template < class T, class Allocator >
-        void WindowObject<T, Allocator>::Acc( value_type *baseptr,
-                                              const std::size_t offsetfrombaseptr,
-                                              const std::size_t count,
+        void WindowObject<T, Allocator>::Acc( typename WindowObject<T, Allocator>::pointer baseptr,
+                                              const typename WindowObject<T, Allocator>::size_t offsetfrombaseptr,
+                                              const typename WindowObject<T, Allocator>::size_t count,
                                               const int targetRank,
                                               const MPI_Op Op ) const
         {
@@ -318,7 +318,7 @@ namespace _MYNAMESPACE_
          * \param index
          * \return
          */
-        typename WindowObject<T, Allocator>::value_type WindowObject<T, Allocator>::Read(const std::size_t index) const
+        typename WindowObject<T, Allocator>::value_type WindowObject<T, Allocator>::Read(const typename WindowObject<T, Allocator>::size_t index) const
         {
             std::size_t iTargetRank = index / m_LocalSize;
             std::size_t iOffset     = index % m_LocalSize ;
@@ -326,7 +326,7 @@ namespace _MYNAMESPACE_
             if( iTargetRank != static_cast<std::size_t>( m_Communicator->GetMPIRank() ) )
             {
                 auto val = MPL::ZeroType<T>();
-                this->Get( &val, iOffset, 1, iTargetRank );
+                this->Get( &val, iOffset, 1, static_cast<int>( iTargetRank ) );
                 return val;
             }
             else
@@ -350,7 +350,7 @@ namespace _MYNAMESPACE_
          * \param index
          * \return
          */
-        const typename WindowObject<T, Allocator>::value_type WindowObject<T, Allocator>::at(const std::size_t index) const
+        const typename WindowObject<T, Allocator>::value_type WindowObject<T, Allocator>::at(const typename WindowObject<T, Allocator>::size_t index) const
         {
             if( index >= m_GlobalSize )
             {
@@ -360,14 +360,14 @@ namespace _MYNAMESPACE_
         }
 
         template < class T, class Allocator >
-        const WindowObject<T, Allocator> &WindowObject<T, Allocator>::operator[](const std::size_t index) const
+        const WindowObject<T, Allocator> &WindowObject<T, Allocator>::operator[](const typename WindowObject<T, Allocator>::size_t index) const
         {
             const_cast< std::size_t& >( m_CurrentIndex ) = index;
             return *this;
         }
 
         template < class T, class Allocator >
-        WindowObject<T, Allocator> &WindowObject<T, Allocator>::operator [](const std::size_t index)
+        WindowObject<T, Allocator> &WindowObject<T, Allocator>::operator [](const typename WindowObject<T, Allocator>::size_t index)
         {
             m_CurrentIndex = index;
             return *this;
@@ -379,7 +379,7 @@ namespace _MYNAMESPACE_
          * \param index
          * \return
          */
-        const typename WindowObject<T, Allocator>::value_type WindowObject<T, Allocator>::LocalAt(const std::size_t index) const
+        const typename WindowObject<T, Allocator>::value_type WindowObject<T, Allocator>::LocalAt(const typename WindowObject<T, Allocator>::size_t index) const
         {
             if( index >= m_LocalCapacity )
             {
@@ -389,14 +389,15 @@ namespace _MYNAMESPACE_
         }
 
         template < class T, class Allocator >
-        void WindowObject<T, Allocator>::Write(const WindowObject<T, Allocator>::value_type &value, const std::size_t index)
+        void WindowObject<T, Allocator>::Write( const T& value,
+                                                const typename WindowObject<T, Allocator>::size_t index)
         {
             std::size_t iTargetRank = index / m_LocalSize;
             std::size_t iOffset     = index % m_LocalSize;
 
             if( iTargetRank != static_cast<std::size_t>( m_Communicator->GetMPIRank() ) )
             {
-                this->Put( &value, iOffset, 1, iTargetRank );
+                this->Put( &value, iOffset, 1, static_cast< int >( iTargetRank ) );
             }
             else
             {
@@ -410,7 +411,9 @@ namespace _MYNAMESPACE_
          * \param baseptr
          * \param count
          */
-        void WindowObject<T, Allocator>::Read(T *baseptr, const std::size_t startindex , const std::size_t count )
+        void WindowObject<T, Allocator>::Read( typename WindowObject<T, Allocator>::pointer baseptr,
+                                               const typename WindowObject<T, Allocator>::size_t startindex ,
+                                               const typename WindowObject<T, Allocator>::size_t count )
         {
             std::size_t iTargetRank = startindex / m_LocalSize;
             std::size_t iOffset     = startindex % m_LocalSize;
@@ -446,7 +449,9 @@ namespace _MYNAMESPACE_
          * \param baseptr
          * \param count
          */
-        void WindowObject<T, Allocator>::Write(const T *baseptr, const std::size_t startindex , const std::size_t count )
+        void WindowObject<T, Allocator>::Write(typename WindowObject<T, Allocator>::const_pointer baseptr,
+                                               const typename WindowObject<T, Allocator>::size_t startindex ,
+                                               const typename WindowObject<T, Allocator>::size_t count )
         {
             std::size_t iTargetRank = startindex / m_LocalSize;
             std::size_t iOffset     = startindex % m_LocalSize;

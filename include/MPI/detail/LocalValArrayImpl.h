@@ -22,9 +22,9 @@ namespace _MYNAMESPACE_
         }
 
         template < class T >
-        LocalValArray<T>::LocalValArray(LocalValArray::pointer baseptr,
-                                        const LocalValArray::size_t localSize,
-                                        const LocalValArray::size_t HaloSize)
+        LocalValArray<T>::LocalValArray(typename LocalValArray<T>::pointer baseptr,
+                                        const typename LocalValArray<T>::size_t localSize,
+                                        const typename LocalValArray<T>::size_t HaloSize)
             : m_BasePtr( baseptr ), m_LocalSize( localSize ), m_HaloSize( HaloSize )
         {
 
@@ -59,19 +59,19 @@ namespace _MYNAMESPACE_
         }
 
         template < class T >
-        typename LocalValArray<T>::reference LocalValArray<T>::operator [](const LocalValArray::size_t index)
+        typename LocalValArray<T>::reference LocalValArray<T>::operator [](const typename LocalValArray<T>::size_t index)
         {
             return m_BasePtr[ index ];
         }
 
         template < class T >
-        typename LocalValArray<T>::const_reference LocalValArray<T>::operator [](const LocalValArray::size_t index) const
+        typename LocalValArray<T>::const_reference LocalValArray<T>::operator [](const typename LocalValArray<T>::size_t index) const
         {
             return m_BasePtr[ index ];
         }
 
         template < class T >
-        const typename LocalValArray<T>::value_type LocalValArray<T>::at(const LocalValArray::size_t index) const
+        const typename LocalValArray<T>::value_type LocalValArray<T>::at(const typename LocalValArray<T>::size_t index) const
         {
             return m_BasePtr[ index ];
         }
