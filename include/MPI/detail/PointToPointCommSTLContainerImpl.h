@@ -34,7 +34,7 @@ namespace _MYNAMESPACE_
             //! size check
             if( count == 0 )
             {
-                sendsize = dataSend.size();
+                sendsize = static_cast<int>( dataSend.size() );
             }
             else if( static_cast<int>( dataSend.size() ) > count )  //例外を投げておく。MPIは例外が出た時点で止まる。
             {

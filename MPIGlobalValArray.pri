@@ -1,6 +1,7 @@
 
 
 win32{
+    DEFINES += _WIN64
     MPIPATH = "C:/Program Files (x86)/Microsoft SDKs/MPI"
     MPILIB = $$MPIPATH/Lib/x64
     MPIINC = $$MPIPATH/Include
@@ -23,3 +24,4 @@ unix{
 
 INCLUDEPATH += $$MPIINC
 DEPENDPATH  += $$MPIINC
+

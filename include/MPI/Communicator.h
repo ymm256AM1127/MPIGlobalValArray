@@ -2,7 +2,6 @@
 #define COMMUNICATOR_H
 
 #include "../SharedLibraryDefine.h"
-#include "../Utility/SingletonHolder.h"
 
 #include <string>
 #include <vector>
