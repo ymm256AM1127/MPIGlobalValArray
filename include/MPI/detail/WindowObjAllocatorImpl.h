@@ -68,11 +68,22 @@ namespace _MYNAMESPACE_
             int ret = MPI_SUCCESS;
             //! たいていのMPIの実装ではWindowオブジェクトが開放されれば、
             //! 自分が確保したメモリも開放しているので、ベースポインタを自
-            //! 前で開放する必要はない。
+            //! 前で開放する必要はない。ただしMSMPIv7までは、MPI3に完全
+            //! に準拠していないため、MPI_Win_allocateがまだ未実装であ
+            //! り、例外として扱う。
+            #ifdef MSMPI_VER
+                #if MSMPI_VER <= 0x100
+                        T* baseptr = nullptr;
+                        int flag   = 0;
+                        MPI_Win_get_attr( win, MPI_WIN_BASE, &baseptr, &flag );
+                        if( baseptr != nullptr )
+                        {
+                            MPI_Free_mem( baseptr );
+                        }
+                #endif
+            #endif
             MPI_Win_free( &win );
             win = MPI_WIN_NULL;
-
-
             return ret;
         }
     }
