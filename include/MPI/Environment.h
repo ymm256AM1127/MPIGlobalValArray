@@ -9,6 +9,7 @@
 #include <unordered_set>
 #include <memory>
 #include <mpi.h>
+#include "Communicator.h"
 
 static const int _MPI_NAME_LENGH_ = 1024;
 
@@ -16,7 +17,6 @@ namespace _MYNAMESPACE_
 {
     namespace  MPI
     {
-        class Communicator;
         class SHAREDLIBRARYDEFINE_EXPORT Environment
         {
         public:

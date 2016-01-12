@@ -11,7 +11,7 @@
 #include <mutex>
 #include <thread>
 #include <functional>
-#include "Environment.h"
+//#include "Environment.h"
 #include "DataTypes.h"
 
 namespace _MYNAMESPACE_

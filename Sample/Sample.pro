@@ -4,7 +4,7 @@ QT -= gui
 include( ../MPIGlobalValArray.pri )
 
 TARGET = Sample
-CONFIG += console
+CONFIG += console c++11
 CONFIG -= app_bundle
 
 
@@ -21,4 +21,4 @@ CONFIG(debug, debug|release) {
 }
 
 INCLUDEPATH += $$PWD/../include
-DEPENDPATH += $$PWD/../include
+DEPENDPATH  += $$PWD/../include
