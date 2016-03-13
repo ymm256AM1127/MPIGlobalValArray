@@ -3,7 +3,7 @@
 
 #include <mpi.h>
 #include <vector>
-#include "../MPL/is_pod.h"
+#include "../MPL/meta_function.h"
 #include <sstream>
 #include <functional>
 #include <exception>

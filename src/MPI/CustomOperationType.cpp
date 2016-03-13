@@ -1,6 +1,6 @@
-#include "include/MPI/CustomOperationType.h"
-#include "include/MPI/PreDefinedDataType.h"
-#include "include/MPI/CustomDataType.h"
+﻿#include "../include/MPI/CustomOperationType.h"
+#include "../include/MPI/PreDefinedDataType.h"
+#include "../include/MPI/CustomDataType.h"
 
 #include <iostream>
 

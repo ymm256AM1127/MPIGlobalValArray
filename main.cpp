@@ -18,10 +18,18 @@ QDebug operator<<(QDebug dbg, const std::complex<double> &c)
 
 using namespace MyMPI::MPI;
 
+template < class T >
+using MPIValArray = _MYNAMESPACE_::MPI::GlobalValArray< _MYNAMESPACE_::MPI::WindowObject< T > > ;
+
+template < class T >
+using ValArray = _MYNAMESPACE_::MPI::LocalValArray< T > ;
+
 int main(int argc, char *argv[])
 {
+
+
+
     //! MPIの初期化
-    Environment env;
 //    env.Init( argc, argv );
     MPIEnvPtr->Init( argc, argv );
     //! コミュニケータの取得

@@ -2,7 +2,6 @@
 #define COMMUNICATOR_H
 
 #include "../SharedLibraryDefine.h"
-#include "../Utility/SingletonHolder.h"
 
 #include <string>
 #include <vector>
@@ -12,7 +11,7 @@
 #include <mutex>
 #include <thread>
 #include <functional>
-#include "Environment.h"
+//#include "Environment.h"
 #include "DataTypes.h"
 
 namespace _MYNAMESPACE_

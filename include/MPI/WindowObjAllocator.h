@@ -5,7 +5,6 @@
 #include <mpi.h>
 #include "Environment.h"
 #include "../MPL/meta_function.h"
-#include <QDebug>
 
 namespace _MYNAMESPACE_
 {
