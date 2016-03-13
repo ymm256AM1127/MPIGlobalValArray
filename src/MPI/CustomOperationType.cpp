@@ -1,14 +1,8 @@
-#include "include/MPI/CustomOperationType.h"
-#include "include/MPI/PreDefinedDataType.h"
-#include "include/MPI/CustomDataType.h"
+﻿#include "../include/MPI/CustomOperationType.h"
+#include "../include/MPI/PreDefinedDataType.h"
+#include "../include/MPI/CustomDataType.h"
 
 #include <iostream>
-
-#ifdef DEBUG_MPI
-    #define _DEBUG_MPI_RET(a) qDebug() << (a)
-#else
-    #define _DEBUG_MPI_RET(a) a
-#endif
 
 MPI_Op _MYNAMESPACE_::MPI::MPI_COMPLEX_FLOAT_SUM ;
 MPI_Op _MYNAMESPACE_::MPI::MPI_COMPLEX_DOUBLE_SUM ;
@@ -20,6 +14,8 @@ namespace
     template < typename T >
     void STDComplexSum( void *in, void *inout, int *len, MPI_Datatype *dptr )
     {
+        UNUSED_VARIABLE(dptr);
+
         T *pin    = static_cast<T*>(in);
         T *pinout = static_cast<T*>(inout);
         for( int ii = 0; ii < *len; ii++ )

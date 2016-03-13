@@ -1,4 +1,4 @@
-#ifndef PREDEFINEDDATATYPE_H
+﻿#ifndef PREDEFINEDDATATYPE_H
 #define PREDEFINEDDATATYPE_H
 
 #include <vector>
@@ -28,6 +28,6 @@ namespace _MYNAMESPACE_
     }
 }
 
-#include "CustomDataType.h"
-
 #endif // PREDEFINEDDATATYPE_H
+
+#include "CustomDataType.h"

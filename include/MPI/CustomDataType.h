@@ -1,4 +1,4 @@
-#ifndef CUSTOMDATATYPE_H
+﻿#ifndef CUSTOMDATATYPE_H
 #define CUSTOMDATATYPE_H
 
 #include <mpi.h>

@@ -1,4 +1,4 @@
-#ifndef ENVIRONMENT_H
+﻿#ifndef ENVIRONMENT_H
 #define ENVIRONMENT_H
 
 #include "../SharedLibraryDefine.h"
@@ -6,7 +6,10 @@
 
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
+#include <memory>
 #include <mpi.h>
+#include "Communicator.h"
 
 static const int _MPI_NAME_LENGH_ = 1024;
 
@@ -17,6 +20,7 @@ namespace _MYNAMESPACE_
         class SHAREDLIBRARYDEFINE_EXPORT Environment
         {
         public:
+            using CommPtr = std::shared_ptr<Communicator>;
             using MPIRankMap = std::unordered_map<int, std::string>;
 
             Environment();
@@ -25,24 +29,19 @@ namespace _MYNAMESPACE_
             void                Init( int argc, char *argv[] );
             void                Finalize();
             void                Abort( const int error_code );
-            bool                IsRootRank()  const;
-            int                 GetRootRank() const;
-            int                 GetMPIRank()  const;
-            int                 GetMPISize()  const;
             std::string         GetHostName() const;
             bool                IsLocalNodeMaster() const;
-
-            bool                IsRootRank( const MPI_Comm& comm ) const;
-            int                 GetMPIRank( const MPI_Comm& comm ) const ;
-            int                 GetMPISize( const MPI_Comm& comm ) const ;
+            CommPtr             CreateCommunicator( const MPI_Comm comm );
+            void                RemoveCommunicator( CommPtr comm );
 
         private:
-            int                 m_i32MPIRank;
-            int                 m_i32MPISize;
+            using CommAllocSet  = std::unordered_set< CommPtr >;
             std::string         m_strHostName;
             MPIRankMap          m_GlobalMPIRankMap;
             MPIRankMap          m_LocalMPIRankMap;
             bool                m_IsLocalNodeMaster;
+            CommAllocSet        m_CommAllocSet;
+
 
             inline void         CreateGlobalNodeMap();
             inline void         CreateLocalNodeMap();

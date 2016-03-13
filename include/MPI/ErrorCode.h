@@ -1,4 +1,4 @@
-#ifndef ERRORCODE_H
+﻿#ifndef ERRORCODE_H
 #define ERRORCODE_H
 
 #include "../SharedLibraryDefine.h"
@@ -15,7 +15,10 @@ namespace _MYNAMESPACE_
             BROADCASTSIZEERROR       = -4,
             GATHERSIZEERROR          = -5,
             SCCATERSIZEERROR         = -6,
-            ALLTOALLSIZEERROR        = -7
+            ALLTOALLSIZEERROR        = -7,
+            CANNOTCREATEWINDOW       = -8,
+            CANNOTREGISTWINTOCOMM    = -9,
+            CANNOTERASEWINFEOMCOMM   = -10
         } ERROR_CODE;
     }
 }

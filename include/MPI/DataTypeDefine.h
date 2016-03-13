@@ -1,10 +1,18 @@
-#ifndef DATATYPEDEFINE_H
+﻿#ifndef DATATYPEDEFINE_H
 #define DATATYPEDEFINE_H
 
 #include "../SharedLibraryDefine.h"
 #include <mpi.h>
 #include "../MPL/is_complex.h"
 #include "../MPL/is_pod.h"
+
+#define UNUSED_VARIABLE(x) (void)(x)
+#ifdef DEBUG_MPI
+    #include <QDebug>
+    #define _DEBUG_MPI_RET(a) qDebug() << (a)
+#else
+    #define _DEBUG_MPI_RET(a) a
+#endif
 
 namespace _MYNAMESPACE_
 {
@@ -13,6 +21,12 @@ namespace _MYNAMESPACE_
         /*!
          * Base template MPIDATATYPE
          */
+
+        template < class T > inline T ZEROVALUE(){ return T(0); }
+        template<>
+        inline std::complex<float> ZEROVALUE(){ return std::complex<float>(0.0f,0.0f); }
+        inline std::complex<double> ZEROVALUE(){ return std::complex<double>(0.0f,0.0f); }
+
         template < class T > inline MPI_Datatype MPIDATATYPE() { return MPI_Datatype(0); }
 
         template < class T > inline MPI_Datatype MPIDataType()
