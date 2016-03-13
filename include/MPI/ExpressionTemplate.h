@@ -19,6 +19,7 @@ namespace _MYNAMESPACE_
         struct UnaryFunction
         {
             using argument_type = Arg;
+            using result_type   = Result;
         };
 
         template <class Arg1, class Arg2, class Result>
@@ -145,11 +146,9 @@ namespace _MYNAMESPACE_
         };
 
         #define REGIST_BINARY_OP_OPERATOR( type, OpMark ) template< class T > \
-        struct type##Expression : BinaryFunction< T, T, T > \
+        struct type##Expression : public BinaryFunction< T, T, T > \
         { \
-            using value_type  = T; \
-            using result_type = T; \
-            T operator()( const T& lhs, const T& rhs) const \
+            typename BinaryFunction< T, T, T >::result_type operator()( const typename BinaryFunction< T, T, T >::first_argument_type& lhs, const typename BinaryFunction< T, T, T >::second_argument_type& rhs) const \
             { \
                 return lhs OpMark rhs; \
             } \
@@ -165,11 +164,9 @@ namespace _MYNAMESPACE_
         REGIST_BINARY_OP_OPERATOR( Div, / );
 
         #define REGIST_BINARY_OP_TYPE( type, OpMark ) template< class T > \
-        struct type##Expression : BinaryFunction< T, T, T > \
+        struct type##Expression : public BinaryFunction< T, T, T > \
         { \
-            using value_type  = T; \
-            using result_type = T; \
-            T operator()( const T& lhs, const T& rhs) const \
+            typename BinaryFunction< T, T, T >::result_type operator()( const typename BinaryFunction< T, T, T >::first_argument_type& lhs, const typename BinaryFunction< T, T, T >::second_argument_type& rhs) const \
             { \
                 return OpMark ( lhs, rhs ); \
             } \
@@ -188,11 +185,9 @@ namespace _MYNAMESPACE_
          * ここに引数が1個のファンクタを登録する
          */
         #define REGIST_UNARY_OP_TYPE( type, OpMark ) template < class T > \
-        struct type##Expression : UnaryFunction< T , T > \
+        struct type##Expression : public UnaryFunction< T , T > \
         { \
-            using value_type  = T; \
-            using result_type = T; \
-            T operator()( const T& x ) const \
+            typename UnaryFunction< T , T >::result_type operator()( const typename UnaryFunction< T , T >::argument_type& x ) const \
             { \
                 return OpMark( x ); \
             } \
