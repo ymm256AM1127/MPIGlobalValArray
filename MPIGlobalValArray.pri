@@ -16,10 +16,10 @@ macx:!unix{
 }
 
 unix{
-    MPIPATH = /opt/mpi
-    MPILIB = $$MPIPATH/lib
-    MPIINC = $$MPIPATH/include
-    LIBS += -L$$MPILIB -lmpi
+    MPIPATH = /opt/mpi/openmpi-2.1.2.gcc-6
+    MPILIB  = $$MPIPATH/lib
+    MPIINC  = $$MPIPATH/include
+    LIBS   += -L$$MPILIB -lmpi
 }
 
 INCLUDEPATH += $$MPIINC

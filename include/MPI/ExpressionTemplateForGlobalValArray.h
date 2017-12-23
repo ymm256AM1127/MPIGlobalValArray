@@ -94,7 +94,7 @@ namespace _MYNAMESPACE_
         public:
             using value_type  = typename RmExpr::value_type;
             using result_type = typename RmExpr::result_type;
-            using size_t      = size_t;
+            using size_t      = std::size_t;
 
             explicit VAL_EXPRESSIONGlobalValArray( const RmExpr& e ) : expr( e ) {}
 
