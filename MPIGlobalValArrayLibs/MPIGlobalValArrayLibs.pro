@@ -76,6 +76,7 @@ HEADERS += \
     ../include/Utility/ForwardAccessIterator.h \
     ../include/Utility/ForwardAccessIteratorImpl.h \
     ../include/Utility/MathHelper.h \
-    ../include/MPI/MPIValArray.h
-
+    ../include/MPI/MPIValArray.h \
+    ../include/MPI/ImmediateReturnType.h \
+    ../include/MPI/CommunicatorTagDefine.h
 

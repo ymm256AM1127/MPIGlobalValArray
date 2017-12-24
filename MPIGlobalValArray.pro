@@ -1,3 +1,4 @@
 TEMPLATE = subdirs
 SUBDIRS += MPIGlobalValArrayLibs \
-    Sample
+    Sample \
+    Sample2

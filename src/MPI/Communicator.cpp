@@ -87,32 +87,11 @@ namespace _MYNAMESPACE_
 
         /*!
          * \brief _MYNAMESPACE_::MPI::Communicator::WaitAll
-         * このメンバ関数が呼ばれる前にすべての非同期インストラクションが
-         * 発行されていなければならない。つまりマルチスレッド下で、
-         * このメンバ関数を呼ぶことは非推奨
          */
         void Communicator::WaitAll()
         {
-            Utility::ScopedMutex<std::mutex> locker( &m_Mutex );
-            if( !m_vectMPI_Requests.empty() )
-            {
-                MPI_Waitall( static_cast<int>( m_vectMPI_Requests.size() ),
-                             m_vectMPI_Requests.data(),
-                             MPI_STATUSES_IGNORE );
-                std::vector< MPI_Request > newRequest;
-                m_vectMPI_Requests.swap( newRequest );
-            }
-
-            //! コンテナによる非同期P2P通信を行った場合にスレッドの待ち合わせ。
-            if( !m_vectThreadPool.empty() )
-            {
-                for( auto &thread : m_vectThreadPool )
-                {
-                    thread.join();
-                }
-                std::vector<std::thread> newthreadpool;
-                m_vectThreadPool.swap( newthreadpool );
-            }
+            MPI_Waitall( static_cast<int>( m_vectMPI_Requests.size() ), m_vectMPI_Requests.data(),  MPI_STATUSES_IGNORE );
+            m_vectMPI_Requests.clear();
         }
     }
 }

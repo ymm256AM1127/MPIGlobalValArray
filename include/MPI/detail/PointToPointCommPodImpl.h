@@ -1,4 +1,4 @@
-#ifndef POINTTOPOINTCOMMPODIMPL_H
+﻿#ifndef POINTTOPOINTCOMMPODIMPL_H
 #define POINTTOPOINTCOMMPODIMPL_H
 
 #include "../PotinToPointCommPod.h"
@@ -9,6 +9,7 @@
 #include "../../Utility/ScopedMutex.h"
 
 #include <iostream>
+#include "../ImmediateReturnType.h"
 
 namespace _MYNAMESPACE_
 {
@@ -40,30 +41,22 @@ namespace _MYNAMESPACE_
 
         // _Iend_
         template<typename T>
-        int     _Isend_( pod_traits_tag, const T &dataSend, const int dest, const int i32Tag, Communicator* comm, const int count )
+        ImmediateRetType _Isend_( pod_traits_tag, const T &dataSend, const int dest, const int i32Tag, Communicator* comm, const int count )
         {
-            int retival = 0;
-            Utility::ScopedMutex<std::mutex> locker( &comm->Mutex() );
-            comm->MPI_Requests().push_back( MPI_Request() );
-            int i32LastIndex = comm->MPI_Requests().size() - 1;
+            ImmediateRetType retival;
 
-            retival = MPI_Isend( (void*)&dataSend, count, MPIDataType<T>(), dest,
-                                 i32Tag, comm->GetCommunicator(), &comm->MPI_Requests()[i32LastIndex] );
+            retival.ReturnValue = MPI_Isend( (void*)&dataSend, count, MPIDataType<T>(), dest, i32Tag, comm->GetCommunicator(), &retival.request );
 
             return retival;
         }
 
         // _Irecv_
         template<typename T>
-        int     _Irecv_( pod_traits_tag,          T &dataRecv, const int source, const int i32Tag, Communicator* comm, const int count )
+        ImmediateRetType _Irecv_( pod_traits_tag, T &dataRecv, const int source, const int i32Tag, Communicator* comm, const int count )
         {
-            int retival = 0;
-            Utility::ScopedMutex<std::mutex> locker( &comm->Mutex() );
-            comm->MPI_Requests().push_back( MPI_Request() );
-            int i32LastIndex = comm->MPI_Requests().size() - 1;
+            ImmediateRetType retival;
 
-            retival = MPI_Irecv( (void*)&dataRecv, count, MPIDataType<T>(), source,
-                                 i32Tag, comm->GetCommunicator(), &comm->MPI_Requests()[i32LastIndex] );
+            retival.ReturnValue = MPI_Irecv( (void*)&dataRecv, count, MPIDataType<T>(), source, i32Tag, comm->GetCommunicator(), &retival.request );
 
             return retival;
         }

@@ -54,15 +54,6 @@ namespace _MYNAMESPACE_
             return m_vectMPI_Requests;
         }
 
-        std::mutex &Communicator::Mutex()
-        {
-            return m_Mutex;
-        }
-
-        std::vector<std::thread> &Communicator::ThreadPool()
-        {
-            return m_vectThreadPool;
-        }
         template< class T >
         /*!
          * \brief Send
@@ -78,15 +69,42 @@ namespace _MYNAMESPACE_
 
         template< class T >
         /*!
+         * \brief Communicator::Send
+         * \param dataSend
+         * \param dest
+         * \param tag
+         * \param count
+         * \return
+         */
+        int Communicator::Send( const T &dataSend, const int dest, const Tags tag, const int count )
+        {
+            return _Send_< T >( typename comm_trais<T>::tag(), dataSend, dest, static_cast<int>( tag ), this, count );
+        }
+
+        template< class T >
+        /*!
          * \brief Recv
          * \param dataRecv
          * \param source
          * \param count
          * \return
          */
-        int Communicator::Recv(  T &dataRecv, const int source, const int count )
+        int Communicator::Recv( T &dataRecv, const int source, const int count )
         {
             return _Recv_< T >( typename comm_trais<T>::tag(), dataRecv, source, m_i32Tag, this, count );
+        }
+
+        template< class T >
+        /*!
+         * \brief Recv
+         * \param dataRecv
+         * \param source
+         * \param count
+         * \return
+         */
+        int Communicator::Recv( T &dataRecv, const int source, const Tags tag, const int count )
+        {
+            return _Recv_< T >( typename comm_trais<T>::tag(), dataRecv, source, static_cast<int>( tag ), this, count );
         }
 
         template< class T >
@@ -97,9 +115,9 @@ namespace _MYNAMESPACE_
          * \param count
          * \return
          */
-        int Communicator::Isend( const T &dataSend, const int dest, const int count )
+        Communicator::Iret Communicator::Isend( const T &dataSend, const int dest, const int count )
         {
-            return _Isend_< T >( typename comm_trais<T>::tag(),  dataSend, dest, m_i32Tag, this, count);
+            return _Isend_< T >( typename comm_trais<T>::tag(), dataSend, dest, m_i32Tag, this, count );
         }
 
         template< class T >
@@ -110,11 +128,38 @@ namespace _MYNAMESPACE_
          * \param count
          * \return
          */
-        int Communicator::Irecv(  T &dataRecv, const int source, const int count )
+        Communicator::Iret Communicator::Irecv(  T &dataRecv, const int source, const int count )
         {
             return _Irecv_( typename comm_trais<T>::tag(), dataRecv, source, m_i32Tag, this, count );
         }
 
+        template< class T >
+        /*!
+         * \brief Communicator::Isend
+         * \param dataSend
+         * \param dest
+         * \param tag
+         * \param count
+         * \return
+         */
+        Communicator::Iret Communicator::Isend( const T &dataSend, const int dest, const Tags tag, const int count )
+        {
+            return _Isend_< T >( typename comm_trais<T>::tag(), dataSend, dest, static_cast<int>( tag ), this, count );
+        }
+
+        template< class T >
+        /*!
+         * \brief Communicator::Irecv
+         * \param dataRecv
+         * \param source
+         * \param tag
+         * \param count
+         * \return
+         */
+        Communicator::Iret Communicator::Irecv(  T &dataRecv, const int source, const Tags tag, const int count )
+        {
+            return _Irecv_( typename comm_trais<T>::tag(), dataRecv, source, static_cast<int>( tag ), this, count );
+        }
 
         template< class T >
         /*!
